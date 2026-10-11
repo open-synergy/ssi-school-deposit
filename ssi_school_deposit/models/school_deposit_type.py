@@ -63,6 +63,24 @@ class SchoolDepositType(models.Model):
         required=True,
         help="Products whose invoice lines this deposit may be used " "to settle.",
     )
+    forfeit_journal_id = fields.Many2one(
+        string="Forfeit Journal",
+        comodel_name="account.journal",
+        ondelete="restrict",
+        domain="[('type', 'not in', ('bank', 'cash'))]",
+        help="Journal in which the entry of a forfeit of this deposit "
+        "type is posted. Required before a forfeit document can be "
+        "finished. Bank and Cash journals are not offered, since a "
+        "forfeit is not a received payment.",
+    )
+    forfeit_account_id = fields.Many2one(
+        string="Forfeit Account",
+        comodel_name="account.account",
+        ondelete="restrict",
+        help="Account credited when an unused deposit of this type is "
+        "forfeited, normally an other-income account of the issuing "
+        "unit. Required before a forfeit document can be finished.",
+    )
     auto_realize = fields.Boolean(
         string="Auto Realize",
         default=True,
