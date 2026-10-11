@@ -320,7 +320,7 @@ scenarios:
             ["payment_term_id", "=", "REC: sfb_term.id"],
           ]
         save_as: "sfb_schedule"
-        limit: 1
+        expect_count: 1
 
       - step: "The schedule line is scheduled with the fixed planned amount"
         action: "assert"

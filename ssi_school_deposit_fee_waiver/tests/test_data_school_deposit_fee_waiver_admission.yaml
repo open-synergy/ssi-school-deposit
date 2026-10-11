@@ -233,6 +233,21 @@ scenarios:
         method: "action_compute_payment"
         as_user: "base.user_admin"
 
+      - step: "Get the fee_term"
+        action: "search"
+        model: "school_admission_payment_term"
+        domain:
+          - ["admission_id", "=", "REC: admission.id"]
+          - ["name", "=", "Fee Term SFCA"]
+        save_as: "fee_term"
+        expect_count: 1
+
+      - step: "Set the due date of the fee_term, the schedule date comes from it"
+        action: "write"
+        target: "fee_term"
+        values:
+          date_due: 2026-08-15
+
       - step: "Assert admission is confirm before approve (forces refresh, T-04)"
         action: "assert"
         target: "admission"
@@ -274,21 +289,6 @@ scenarios:
         domain: [["id", "=", "EVAL: registry['deposit_term'].customer_invoice_id.id"]]
         save_as: "deposit_inv"
         expect_count: 1
-
-      - step: "Get the fee_term"
-        action: "search"
-        model: "school_admission_payment_term"
-        domain:
-          - ["admission_id", "=", "REC: admission.id"]
-          - ["name", "=", "Fee Term SFCA"]
-        save_as: "fee_term"
-        expect_count: 1
-
-      - step: "Set the due date of the fee_term, the schedule date comes from it"
-        action: "write"
-        target: "fee_term"
-        values:
-          date_due: 2026-08-15
 
       - step: "Create the fee waiver type"
         action: "create"
@@ -361,7 +361,7 @@ scenarios:
             ["admission_payment_term_id", "=", "REC: fee_term.id"],
           ]
         save_as: "schedule"
-        limit: 1
+        expect_count: 1
 
       - step: "The schedule line is scheduled with the fixed planned amount"
         action: "assert"
