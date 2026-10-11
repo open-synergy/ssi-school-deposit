@@ -11,6 +11,7 @@ setuptools.setup(
         'odoo14-addon-ssi_school_deposit',
         'odoo14-addon-ssi_school_deposit_admission',
         'odoo14-addon-ssi_school_deposit_fee_waiver',
+        'odoo14-addon-ssi_school_deposit_operating_unit',
         'odoo14-addon-ssi_school_deposit_scholarship',
     ],
     classifiers=[
