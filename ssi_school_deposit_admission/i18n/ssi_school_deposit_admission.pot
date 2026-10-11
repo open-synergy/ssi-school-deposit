@@ -1,0 +1,46 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ssi_school_deposit_admission
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: ssi_school_deposit_admission
+#: model:ir.model.fields,field_description:ssi_school_deposit_admission.field_school_admission__amount_deposit_realized
+msgid "Deposit Realized"
+msgstr ""
+
+#. module: ssi_school_deposit_admission
+#: model:ir.model.fields,field_description:ssi_school_deposit_admission.field_school_admission__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: ssi_school_deposit_admission
+#: model:ir.model.fields,field_description:ssi_school_deposit_admission.field_school_admission__id
+msgid "ID"
+msgstr ""
+
+#. module: ssi_school_deposit_admission
+#: model:ir.model.fields,field_description:ssi_school_deposit_admission.field_school_admission____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: ssi_school_deposit_admission
+#: model:ir.model.fields,help:ssi_school_deposit_admission.field_school_admission__amount_deposit_realized
+msgid ""
+"Part of the settled amount that came from finished school deposit "
+"realizations. It is not a deduction and is left out of Other Credits."
+msgstr ""
+
+#. module: ssi_school_deposit_admission
+#: model:ir.model,name:ssi_school_deposit_admission.model_school_admission
+msgid "School Admission"
+msgstr ""
