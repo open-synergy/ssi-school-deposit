@@ -417,8 +417,10 @@ odoo.define("ssi_school_deposit.school_deposit_realization_tour", function (requ
             },
             {
                 content: "Open the record",
+                // The partner also has the open deposit invoice; pick the
+                // row still Waiting for Approval.
                 trigger:
-                    ".o_data_row:contains(TOUR SDR Customer AUTO) .o_data_cell:first",
+                    ".o_data_row:contains(TOUR SDR Customer AUTO):contains(Waiting for Approval) .o_data_cell:first",
             },
             {
                 content: "Click the Approve button",
