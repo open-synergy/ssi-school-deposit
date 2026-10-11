@@ -71,7 +71,7 @@
                         string="Compute Lines"
                         class="oe_highlight"
                         states="draft"
-                        groups="school_deposit_realization_user_group"
+                        groups="ssi_school_deposit.school_deposit_realization_user_group"
                     />
             </xpath>
             <xpath expr="//group[@name='header_right']" position="inside">

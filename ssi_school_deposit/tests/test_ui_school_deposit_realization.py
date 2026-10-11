@@ -178,7 +178,9 @@ class TestUiSchoolDepositRealization(HttpSavepointCase):
         partner = cls._create_partner("AUTO")
         cls._open_invoice(partner, cls.source_product, 1000.0, deposit=True)
         auto_invoice = cls._create_invoice_with_line(partner, cls.target_product, 600.0)
-        auto_invoice.with_user(admin).action_confirm()
+        auto_invoice.with_user(admin).with_context(
+            bypass_policy_check=True
+        ).action_confirm()
         auto_invoice.invalidate_cache()
 
         # ── Cancel Done tour: a Done realization ──
@@ -260,7 +262,7 @@ class TestUiSchoolDepositRealization(HttpSavepointCase):
         :return: the opened ``customer_invoice`` record
         """
         invoice = cls._create_invoice_with_line(partner, product, amount, deposit)
-        invoice = invoice.with_user(cls.admin)
+        invoice = invoice.with_user(cls.admin).with_context(bypass_policy_check=True)
         invoice.action_confirm()
         invoice.invalidate_cache()
         invoice.action_approve_approval()
