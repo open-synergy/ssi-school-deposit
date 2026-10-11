@@ -86,8 +86,14 @@ class TestUiSchoolDepositRealization(HttpSavepointCase):
                 "receivable_account_id": receivable_account.id,
             }
         )
+        # ``global_use`` makes the reason selectable on every document;
+        # without it the wizard radio does not offer the reason.
         cls.env["base.cancel_reason"].create(
-            {"name": "TOUR SDR Cancel Reason", "code": "TOURSDRCR"}
+            {
+                "name": "TOUR SDR Cancel Reason",
+                "code": "TOURSDRCR",
+                "global_use": True,
+            }
         )
 
         # ── Create tour: an open invoice and a posted deposit entry ──
