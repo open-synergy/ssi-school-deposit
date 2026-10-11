@@ -328,4 +328,215 @@ odoo.define("ssi_school_deposit.school_deposit_realization_tour", function (requ
             ]
         )
     );
+
+    // IK: docs/school_deposit_realization/06-compute-line.md
+    tour.register(
+        "ssi_school_deposit_school_deposit_realization_compute_line",
+        {test: true, url: "/web"},
+        [].concat(openRealizationsList(), openRecord("TOUR SDR Customer COMPUTE"), [
+            {
+                content: "Click the Compute Lines button",
+                trigger: ".o_statusbar_buttons button[name='action_compute_line']",
+                extra_trigger: ".o_form_view",
+            },
+            {
+                content: "Open the Lines tab",
+                trigger: ".o_notebook .nav-link:contains(Lines)",
+                extra_trigger: ".o_form_view",
+            },
+            {
+                // Post-Condition: a line was computed from the deposit.
+                content: "A line is listed",
+                trigger: ".o_field_one2many[name='line_ids'] .o_data_row",
+                run: function () {
+                    // Assertion only; do not trigger the default click.
+                },
+            },
+        ])
+    );
+
+    // IK: docs/school_deposit_realization/07-approve.md
+    tour.register(
+        "ssi_school_deposit_school_deposit_realization_approve",
+        {test: true, url: "/web"},
+        [].concat(
+            openRealizationsList(),
+            openRecord("TOUR SDR Customer APPROVE"),
+            [
+                {
+                    content: "Click the Approve button",
+                    trigger:
+                        ".o_statusbar_buttons button[name='action_approve_approval']",
+                    extra_trigger: ".o_form_view",
+                },
+            ],
+            confirmDialog(),
+            [
+                {
+                    content: "Status is Done",
+                    trigger:
+                        ".o_statusbar_status .o_arrow_button[data-value='done'].btn-primary",
+                    extra_trigger: "body:not(:has(.modal))",
+                    run: function () {
+                        // Assertion only; do not trigger the default click.
+                    },
+                },
+            ]
+        )
+    );
+
+    // IK: docs/school_deposit_realization/08-auto-done.md
+    tour.register(
+        "ssi_school_deposit_school_deposit_realization_auto_done",
+        {test: true, url: "/web"},
+        [
+            tour.stepUtils.showAppsMenuItem(),
+            {
+                content: "Open the Financial Accounting app",
+                trigger:
+                    '.o_app[data-menu-xmlid="ssi_financial_accounting.menu_root_financial_accounting"]',
+            },
+            {
+                content: "Open the Account Receivable menu",
+                trigger:
+                    '.o_menu_sections [data-menu-xmlid="ssi_financial_accounting.menu_account_receivable"]',
+            },
+            {
+                content: "Open the Customer Invoice menu",
+                trigger:
+                    '.o_menu_sections [data-menu-xmlid="ssi_customer_invoice.customer_invoice_menu"]',
+            },
+            {
+                content: "Customer Invoices list is displayed",
+                trigger:
+                    ".o_control_panel .breadcrumb-item.active:contains(Customer Invoices)",
+                extra_trigger: ".o_list_view",
+                run: function () {
+                    // Assertion only; do not trigger the default click.
+                },
+            },
+            {
+                content: "Open the record",
+                // The partner also has the open deposit invoice; pick the
+                // row still Waiting for Approval.
+                trigger:
+                    ".o_data_row:contains(TOUR SDR Customer AUTO):contains(Waiting for Approval) .o_data_cell:first",
+            },
+            {
+                content: "Click the Approve button",
+                trigger: ".o_statusbar_buttons button[name='action_approve_approval']",
+                extra_trigger: ".o_form_view",
+            },
+            {
+                content: "Confirm the dialog",
+                trigger: ".modal-footer button.btn-primary",
+                in_modal: true,
+            },
+            {
+                // The deposit covers the whole invoice, so the realization
+                // pays it off and the invoice ends up Paid.
+                content: "Status is Paid",
+                trigger:
+                    ".o_statusbar_status .o_arrow_button[data-value='done'].btn-primary",
+                extra_trigger: "body:not(:has(.modal))",
+                run: function () {
+                    // Assertion only; do not trigger the default click.
+                },
+            },
+        ]
+    );
+
+    // IK: docs/school_deposit_realization/09-cancel-done.md
+    tour.register(
+        "ssi_school_deposit_school_deposit_realization_cancel_done",
+        {test: true, url: "/web"},
+        [].concat(
+            openRealizationsList(),
+            openRecord("TOUR SDR Customer CANCELDONE"),
+            [
+                {
+                    content: "Click the Cancel button",
+                    trigger: ".o_statusbar_buttons button:enabled:contains('Cancel')",
+                    extra_trigger: ".o_form_view",
+                },
+                {
+                    content: "Select the Cancellation Reason",
+                    trigger:
+                        ".o_field_widget[name='cancel_reason_id'] .o_radio_item:contains(TOUR SDR Cancel Reason) input",
+                    in_modal: true,
+                },
+                {
+                    content: "Confirm the wizard",
+                    trigger: ".modal-footer button[name='action_confirm']",
+                },
+            ],
+            confirmDialog(),
+            [
+                {
+                    content: "Status is Cancelled",
+                    trigger:
+                        ".o_statusbar_status .o_arrow_button[data-value='cancel'].btn-primary",
+                    extra_trigger: "body:not(:has(.modal))",
+                    run: function () {
+                        // Assertion only; do not trigger the default click.
+                    },
+                },
+            ]
+        )
+    );
+
+    // IK: docs/school_deposit_reprocess/01-reprocess.md
+    tour.register(
+        "ssi_school_deposit_school_deposit_reprocess_reprocess",
+        {test: true, url: "/web"},
+        [
+            tour.stepUtils.showAppsMenuItem(),
+            {
+                content: "Open the School app",
+                trigger: '.o_app[data-menu-xmlid="ssi_school.menu_school_root"]',
+            },
+            {
+                content: "Open the School Deposit menu",
+                trigger:
+                    '.o_menu_sections [data-menu-xmlid="ssi_school_deposit.menu_school_deposit"]',
+            },
+            {
+                content: "Open the Reprocess Deposit Realizations menu",
+                trigger:
+                    '.o_menu_sections [data-menu-xmlid="ssi_school_deposit.school_deposit_reprocess_menu"]',
+            },
+            {
+                content: "Select a Type",
+                trigger: ".o_field_many2manytags[name='type_ids'] input",
+                run: "text TOUR SDR Type",
+            },
+            {
+                content: "Pick the Type from the dropdown",
+                trigger: ".ui-autocomplete .ui-menu-item a:contains(TOUR SDR Type)",
+                in_modal: false,
+            },
+            {
+                content: "Select a Partner",
+                trigger: ".o_field_many2manytags[name='partner_ids'] input",
+                run: "text TOUR SDR Customer REPROCESS",
+            },
+            {
+                content: "Pick the Partner from the dropdown",
+                trigger:
+                    ".ui-autocomplete .ui-menu-item a:contains(TOUR SDR Customer REPROCESS)",
+                in_modal: false,
+            },
+            {
+                content: "Click the Reprocess button",
+                trigger: ".modal-footer button[name='action_reprocess']",
+            },
+            {
+                content: "The dialog is closed",
+                trigger: "body:not(:has(.modal))",
+                run: function () {
+                    // Assertion only; do not trigger the default click.
+                },
+            },
+        ]
+    );
 });

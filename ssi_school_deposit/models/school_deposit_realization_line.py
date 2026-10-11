@@ -24,7 +24,9 @@ class SchoolDepositRealizationLine(models.Model):
     _order = "realization_id, id"
 
     # Accounting Move Single Line Mixin (``mixin.account_move_single_line``)
+    _move_id_field_name = "move_id"
     _account_id_field_name = "account_id"
+    _partner_id_field_name = "partner_id"
     _amount_currency_field_name = "amount"
     _date_field_name = "date"
     _normal_amount = "debit"
@@ -73,6 +75,14 @@ class SchoolDepositRealizationLine(models.Model):
 
     # Convenience fields mirrored from the header, following the
     # pattern of ``customer_invoice.line``.
+    move_id = fields.Many2one(
+        related="realization_id.move_id",
+        compute_sudo=True,
+    )
+    partner_id = fields.Many2one(
+        related="realization_id.partner_id",
+        compute_sudo=True,
+    )
     date = fields.Date(
         related="realization_id.date",
         compute_sudo=True,
@@ -89,6 +99,20 @@ class SchoolDepositRealizationLine(models.Model):
         related="realization_id.company_currency_id",
         compute_sudo=True,
     )
+
+    def _create_school_deposit_source_entry(self):
+        """Create the debit journal item of this line on the deposit.
+
+        Public contract used by this module's accounting entry and by
+        glue modules that book the same entry differently. The item
+        is saved to ``move_line_id``.
+
+        :return: the created debit ``account.move.line``
+        """
+        self.ensure_one()
+        ml = self._create_standard_ml()  # Mixin
+        self.write({"move_line_id": ml.id})
+        return ml
 
     @api.onchange("realization_id", "source_move_line_id")
     def onchange_account_id(self):

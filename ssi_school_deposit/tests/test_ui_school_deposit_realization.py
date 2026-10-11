@@ -74,6 +74,10 @@ class TestUiSchoolDepositRealization(HttpSavepointCase):
             }
         )
         cls.deposit_type = deposit_type
+        cls.deposit_account = deposit_account
+        cls.source_product = source_product
+        cls.target_product = target_product
+        cls.contra_account = contra_account
         cls.general_journal = general_journal
         cls.sale_journal = sale_journal
         cls.receivable_account = receivable_account
@@ -151,6 +155,47 @@ class TestUiSchoolDepositRealization(HttpSavepointCase):
         # ── Restart tour: a Cancelled realization ──
         cls._create_realization("RESTART").write({"state": "cancel"})
 
+        # ── Compute Lines tour: a Draft realization without lines ──
+        # The payable invoice is opened first, so that opening the
+        # deposit invoice afterwards cannot realize anything.
+        partner = cls._create_partner("COMPUTE")
+        invoice = cls._open_invoice(partner, cls.target_product, 600.0)
+        cls._open_invoice(partner, cls.source_product, 1000.0, deposit=True)
+        cls._create_realization_of(partner, invoice)
+
+        # ── Approve tour: a realization Waiting for Approval ──
+        partner = cls._create_partner("APPROVE")
+        invoice = cls._open_invoice(partner, cls.target_product, 600.0)
+        cls._open_invoice(partner, cls.source_product, 1000.0, deposit=True)
+        approve = cls._create_realization_of(partner, invoice)
+        approve.action_compute_line()
+        approve = approve.with_user(admin)
+        approve.action_confirm()
+        approve.invalidate_cache()
+
+        # ── Automatic realization tour: the deposit is open, the payable
+        # invoice waits for approval ──
+        partner = cls._create_partner("AUTO")
+        cls._open_invoice(partner, cls.source_product, 1000.0, deposit=True)
+        auto_invoice = cls._create_invoice_with_line(partner, cls.target_product, 600.0)
+        auto_invoice.with_user(admin).with_context(
+            bypass_policy_check=True
+        ).action_confirm()
+        auto_invoice.invalidate_cache()
+
+        # ── Cancel Done tour: a Done realization ──
+        partner = cls._create_partner("CANCELDONE")
+        invoice = cls._open_invoice(partner, cls.target_product, 600.0)
+        cls._open_invoice(partner, cls.source_product, 1000.0, deposit=True)
+        done = cls._create_realization_of(partner, invoice)
+        done.action_compute_line()
+        done.with_context(bypass_policy_check=True).action_done()
+
+        # ── Reprocess tour: an open payable invoice and a later deposit ──
+        partner = cls._create_partner("REPROCESS")
+        cls._open_invoice(partner, cls.target_product, 600.0)
+        cls._open_invoice(partner, cls.source_product, 1000.0, deposit=True)
+
     @classmethod
     def _create_partner(cls, suffix):
         """Create the dedicated partner of one tour scenario.
@@ -178,6 +223,68 @@ class TestUiSchoolDepositRealization(HttpSavepointCase):
                 "currency_id": cls.env.ref("base.USD").id,
                 "journal_id": cls.sale_journal.id,
                 "receivable_account_id": cls.receivable_account.id,
+            }
+        )
+
+    @classmethod
+    def _create_invoice_with_line(cls, partner, product, amount, deposit=False):
+        """Create a draft customer invoice with one line.
+
+        :param partner: the ``res.partner`` the invoice is billed to
+        :param product: the ``product.product`` of the line
+        :param amount: unit price of the line
+        :param deposit: credit the deposit account instead of income
+        :return: the new ``customer_invoice`` record
+        """
+        invoice = cls._create_invoice(partner)
+        invoice.write({"pricelist_id": cls.env.ref("product.list0").id})
+        account = cls.deposit_account if deposit else cls.contra_account
+        cls.env["customer_invoice.line"].create(
+            {
+                "customer_invoice_id": invoice.id,
+                "product_id": product.id,
+                "name": product.name,
+                "account_id": account.id,
+                "uom_quantity": 1,
+                "price_unit": amount,
+            }
+        )
+        return invoice
+
+    @classmethod
+    def _open_invoice(cls, partner, product, amount, deposit=False):
+        """Create a customer invoice and open it through its workflow.
+
+        :param partner: the ``res.partner`` the invoice is billed to
+        :param product: the ``product.product`` of the line
+        :param amount: unit price of the line
+        :param deposit: credit the deposit account instead of income
+        :return: the opened ``customer_invoice`` record
+        """
+        invoice = cls._create_invoice_with_line(partner, product, amount, deposit)
+        invoice = invoice.with_user(cls.admin).with_context(bypass_policy_check=True)
+        invoice.action_confirm()
+        invoice.invalidate_cache()
+        invoice.action_approve_approval()
+        invoice.invalidate_cache()
+        return invoice
+
+    @classmethod
+    def _create_realization_of(cls, partner, invoice):
+        """Create a Draft realization of an existing invoice.
+
+        :param partner: the ``res.partner`` who paid the deposit
+        :param invoice: the open ``customer_invoice`` to settle
+        :return: the new ``school_deposit_realization`` record
+        """
+        return cls.env["school_deposit_realization"].create(
+            {
+                "type_id": cls.deposit_type.id,
+                "partner_id": partner.id,
+                "customer_invoice_id": invoice.id,
+                "journal_id": cls.general_journal.id,
+                "date": "2026-08-10",
+                "user_id": cls.admin.id,
             }
         )
 
@@ -253,5 +360,60 @@ class TestUiSchoolDepositRealization(HttpSavepointCase):
         self.start_tour(
             "/web",
             "ssi_school_deposit_school_deposit_realization_restart",
+            login="admin",
+        )
+
+    def test_compute_line(self):
+        """Run the compute lines tour for ``school_deposit_realization``.
+
+        IK: docs/school_deposit_realization/06-compute-line.md
+        """
+        self.start_tour(
+            "/web",
+            "ssi_school_deposit_school_deposit_realization_compute_line",
+            login="admin",
+        )
+
+    def test_approve(self):
+        """Run the approve tour for ``school_deposit_realization``.
+
+        IK: docs/school_deposit_realization/07-approve.md
+        """
+        self.start_tour(
+            "/web",
+            "ssi_school_deposit_school_deposit_realization_approve",
+            login="admin",
+        )
+
+    def test_auto_done(self):
+        """Run the automatic realization tour on a customer invoice.
+
+        IK: docs/school_deposit_realization/08-auto-done.md
+        """
+        self.start_tour(
+            "/web",
+            "ssi_school_deposit_school_deposit_realization_auto_done",
+            login="admin",
+        )
+
+    def test_cancel_done(self):
+        """Run the cancel done tour for ``school_deposit_realization``.
+
+        IK: docs/school_deposit_realization/09-cancel-done.md
+        """
+        self.start_tour(
+            "/web",
+            "ssi_school_deposit_school_deposit_realization_cancel_done",
+            login="admin",
+        )
+
+    def test_reprocess(self):
+        """Run the reprocess tour for ``school_deposit_reprocess``.
+
+        IK: docs/school_deposit_reprocess/01-reprocess.md
+        """
+        self.start_tour(
+            "/web",
+            "ssi_school_deposit_school_deposit_reprocess_reprocess",
             login="admin",
         )
