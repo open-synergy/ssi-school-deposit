@@ -1,0 +1,10 @@
+odoo-yaml-test
+odoo14-addon-ssi-school
+odoo14-addon-ssi-master-data-mixin
+odoo14-addon-ssi-customer-invoice
+odoo14-addon-ssi-accounting-entry-mixin
+odoo14-addon-ssi-company-currency-mixin
+odoo14-addon-ssi-decorator
+odoo14-addon-ssi-transaction-confirm-mixin
+odoo14-addon-ssi-transaction-done-mixin
+odoo14-addon-ssi-transaction-cancel-mixin
