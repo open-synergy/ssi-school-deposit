@@ -17,7 +17,11 @@ Use school deposits recorded on admission and enrollment payment terms to settle
 
 [//]: # (addons)
 
-This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
+Available addons
+----------------
+addon | version | maintainers | summary
+--- | --- | --- | ---
+[ssi_school_deposit](ssi_school_deposit/) | 14.0.1.0.0 |  | School Deposit
 
 [//]: # (end addons)
 
