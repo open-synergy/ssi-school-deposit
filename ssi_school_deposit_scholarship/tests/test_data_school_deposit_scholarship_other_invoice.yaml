@@ -1,0 +1,515 @@
+# Copyright 2026 OpenSynergy Indonesia
+# Copyright 2026 PT. Simetri Sinergi Indonesia
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+#
+# T-01 (odoo-development-unit-test/test-traps.md): scenarios in one YAML
+# file share a single DB transaction, so this file holds exactly ONE
+# scenario and no `setup:` block. Fixture codes use the `SC4` prefix so
+# the files can run against the same database without collisions.
+options:
+  auto_refresh: true
+scenarios:
+  - name: "Deposit Scholarship - A schedule line of another invoice is not reserved"
+    steps:
+      - step: "Setup - get account types"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "sc4_rec_type"
+
+      - step: "Setup - get revenue account type"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "sc4_rev_type"
+      - step: "Setup - get expense account type"
+        action: "ref"
+        xml_id: "account.data_account_type_expenses"
+        save_as: "sc4_exp_type"
+      - step: "Setup - get liability account type"
+        action: "ref"
+        xml_id: "account.data_account_type_current_liabilities"
+        save_as: "sc4_liab_type"
+      - step: "Setup - create receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "sc4_receivable_account"
+        values:
+          name: "SC4 Receivable"
+          code: "SC4RA"
+          user_type_id: "REC: sc4_rec_type.id"
+          reconcile: true
+      - step: "Setup - create income account"
+        action: "create"
+        model: "account.account"
+        save_as: "sc4_income_account"
+        values:
+          name: "SC4 Income"
+          code: "SC4IA"
+          user_type_id: "REC: sc4_rev_type.id"
+      - step: "Setup - create discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "sc4_discount_account"
+        values:
+          name: "SC4 Discount"
+          code: "SC4DA"
+          user_type_id: "REC: sc4_exp_type.id"
+      - step: "Setup - create deposit liability account"
+        action: "create"
+        model: "account.account"
+        save_as: "sc4_deposit_account"
+        values:
+          name: "SC4 Deposit Liability"
+          code: "SC4DL"
+          user_type_id: "REC: sc4_liab_type.id"
+          reconcile: true
+      - step: "Setup - create deduction journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sc4_deduction_journal"
+        values:
+          name: "SC4 Deduction Journal"
+          code: "SC4DJ"
+          type: "general"
+      - step: "Setup - create sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sc4_sale_journal"
+        values:
+          name: "SC4 Sale Journal"
+          code: "SC4SJ"
+          type: "sale"
+      - step: "Setup - create realization journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sc4_general_journal"
+        values:
+          name: "SC4 General Journal"
+          code: "SC4GJ"
+          type: "general"
+      - step: "Setup - create customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "sc4_ci_type"
+        values:
+          name: "SC4 Invoice Type"
+          code: "SC4CT"
+          journal_id: "REC: sc4_sale_journal.id"
+          receivable_account_id: "REC: sc4_receivable_account.id"
+      - step: "Setup - create grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "sc4_grade_type"
+        values:
+          name: "SC4 Grade Type"
+          code: "SC4GT"
+      - step: "Setup - create school"
+        action: "create"
+        model: "school"
+        save_as: "sc4_school"
+        values:
+          name: "SC4 School"
+          code: "SC4SC"
+          grade_type_id: "REC: sc4_grade_type.id"
+      - step: "Setup - create academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "sc4_academic_year"
+        values:
+          name: "SC4 Academic Year"
+          code: "SC4AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+      - step: "Setup - create academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "sc4_academic_term"
+        values:
+          name: "SC4 Term"
+          code: "SC4TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: sc4_academic_year.id"
+      - step: "Setup - create grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "sc4_grade"
+        values:
+          name: "SC4 Grade"
+          code: "SC4GR"
+          type_id: "REC: sc4_grade_type.id"
+      - step: "Setup - create grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "sc4_grade_class"
+        values:
+          name: "SC4 Class"
+          code: "SC4CL"
+          school_id: "REC: sc4_school.id"
+          grade_id: "REC: sc4_grade.id"
+      - step: "Setup - create student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "sc4_contact"
+        values:
+          name: "SC4 Contact"
+      - step: "Setup - create student"
+        action: "create"
+        model: "school_student"
+        save_as: "sc4_student"
+        values:
+          name: "SC4 Student"
+          code: "SC4ST"
+          contact_id: "REC: sc4_contact.id"
+          school_id: "REC: sc4_school.id"
+      - step: "Setup - create enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "sc4_enrollment"
+        values:
+          academic_year_id: "REC: sc4_academic_year.id"
+          academic_term_id: "REC: sc4_academic_term.id"
+          school_id: "REC: sc4_school.id"
+          grade_id: "REC: sc4_grade.id"
+          grade_class_id: "REC: sc4_grade_class.id"
+          student_id: "REC: sc4_student.id"
+          currency_id: "REC: company.currency_id.id"
+          receivable_journal_id: "REC: sc4_sale_journal.id"
+          receivable_account_id: "REC: sc4_receivable_account.id"
+          customer_invoice_type_id: "REC: sc4_ci_type.id"
+      - step: "Setup - create product Fee Product"
+        action: "create"
+        model: "product.product"
+        save_as: "sc4_fee_product"
+        values:
+          name: "SC4 Fee Product"
+          type: "service"
+      - step: "Setup - create product Deposit Product"
+        action: "create"
+        model: "product.product"
+        save_as: "sc4_deposit_product"
+        values:
+          name: "SC4 Deposit Product"
+          type: "service"
+      - step: "Setup - create deposit type"
+        action: "create"
+        model: "school_deposit_type"
+        save_as: "sc4_deposit_type"
+        values:
+          name: "SC4 Deposit Type"
+          code: "SC4DT"
+          deposit_account_id: "REC: sc4_deposit_account.id"
+          realization_journal_id: "REC: sc4_general_journal.id"
+          source_product_ids:
+            - - 6
+              - 0
+              - - "REC: sc4_deposit_product.id"
+          target_product_ids:
+            - - 6
+              - 0
+              - - "REC: sc4_fee_product.id"
+
+      - step: "Setup - create product Other Product"
+        action: "create"
+        model: "product.product"
+        save_as: "sc4_other_product"
+        values:
+          name: "SC4 Other Product"
+          type: "service"
+
+      - step: "Setup - create analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "sc4_analytic"
+        values:
+          name: "SC4 Analytic"
+
+      - step: "Setup - create funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "sc4_funding_source"
+        values:
+          name: "SC4 Funding Source"
+          code: "SC4FS"
+          analytic_account_id: "REC: sc4_analytic.id"
+
+      - step: "Setup - create scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "sc4_sch_type"
+        values:
+          name: "SC4 Scholarship Type"
+          code: "SC4SY"
+          deduction_journal_id: "REC: sc4_deduction_journal.id"
+          discount_account_id: "REC: sc4_discount_account.id"
+
+      - step: "Setup - create scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "sc4_program"
+        values:
+          name: "SC4 Program"
+          code: "SC4PG"
+          type_id: "REC: sc4_sch_type.id"
+          school_id: "REC: sc4_school.id"
+          academic_year_id: "REC: sc4_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: sc4_funding_source.id"]]]
+          deduction_journal_id: "REC: sc4_deduction_journal.id"
+          discount_account_id: "REC: sc4_discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: sc4_other_product.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+      - step: "Create the payment term Fee Term"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "sc4_term"
+        values:
+          enrollment_id: "REC: sc4_enrollment.id"
+          name: "SC4 Fee Term"
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: sc4_fee_product.id"
+                name: "SC4 Fee Term line"
+                account_id: "REC: sc4_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create the payment term Other Term"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "sc4_term2"
+        values:
+          enrollment_id: "REC: sc4_enrollment.id"
+          name: "SC4 Other Term"
+          date_invoice: 2026-09-01
+          date_due: 2026-09-15
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: sc4_other_product.id"
+                name: "SC4 Other Term line"
+                account_id: "REC: sc4_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create the scholarship award, 40 percent on the scope product"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "sc4_award"
+        values:
+          program_id: "REC: sc4_program.id"
+          student_id: "REC: sc4_student.id"
+          enrollment_id: "REC: sc4_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: sc4_discount_account.id"
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "SC4 Benefit"
+                product_id: "REC: sc4_other_product.id"
+                price_unit: 1000000.0
+                percentage: 40.0
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: sc4_funding_source.id"
+                percentage: 100.0
+
+      - step: "Confirm the scholarship award"
+        action: "call"
+        target: "sc4_award"
+        method: "action_confirm"
+        as_user: "REF: base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the scholarship award, which opens it"
+        action: "call"
+        target: "sc4_award"
+        method: "action_approve_approval"
+        as_user: "REF: base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Find the schedule line of the term"
+        action: "search"
+        model: "school_scholarship_award_schedule"
+        domain:
+          [
+            ["award_id", "=", "REC: sc4_award.id"],
+            ["payment_term_id", "=", "REC: sc4_term2.id"],
+          ]
+        save_as: "sc4_schedule"
+        expect_count: 1
+
+      - step: "The schedule line is scheduled with 40 percent of the base"
+        action: "assert"
+        target: "sc4_schedule"
+        asserts:
+          state:
+            type: "value"
+            expected: "scheduled"
+          amount_planned:
+            type: "value"
+            expected: 400000.0
+
+      - step: "Create the invoice of the other term"
+        action: "call"
+        target: "sc4_term2"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+
+      - step: "The other schedule line belongs to the invoice of the other term"
+        action: "assert"
+        target: "sc4_schedule"
+        asserts:
+          customer_invoice_id:
+            type: "m2o"
+            expected: "REC: sc4_term2.customer_invoice_id.id"
+      - step: "Create the invoice of the term term"
+        action: "call"
+        target: "sc4_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+      - step: "Get the generated invoice invoice"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "REC: sc4_term.customer_invoice_id.id"]]
+        save_as: "sc4_invoice"
+        expect_count: 1
+      - step: "Confirm the invoice invoice"
+        action: "call"
+        target: "sc4_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Create the deposit invoice of the same partner"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "sc4_deposit_inv"
+        values:
+          type_id: "REC: sc4_ci_type.id"
+          partner_id: "EVAL: registry['sc4_invoice'].partner_id.id"
+          date: 2026-07-15
+          date_due: 2026-09-01
+          currency_id: "REF: base.USD"
+          pricelist_id: "REF: product.list0"
+          journal_id: "REC: sc4_sale_journal.id"
+          receivable_account_id: "REC: sc4_receivable_account.id"
+      - step: "Create the deposit line"
+        action: "create"
+        model: "customer_invoice.line"
+        values:
+          customer_invoice_id: "REC: sc4_deposit_inv.id"
+          product_id: "REC: sc4_deposit_product.id"
+          name: "SC4 deposit"
+          account_id: "REC: sc4_deposit_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+      - step: "Confirm the deposit invoice"
+        action: "call"
+        target: "sc4_deposit_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the invoice deposit_inv"
+        action: "call"
+        target: "sc4_deposit_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+      - step: "Find the deposit credit item of the invoice before the realization"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["account_id", "=", "REC: sc4_deposit_account.id"],
+            ["credit", ">", 0.0],
+            ["move_id", "=", "EVAL: registry['sc4_deposit_inv'].move_id.id"],
+          ]
+        save_as: "sc4_source"
+        expect_count: 1
+      - step: "The deposit item has 1000000.0 left before the realization"
+        action: "assert"
+        target: "sc4_source"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: -1000000.0
+      - step: "Approve the invoice invoice"
+        action: "call"
+        target: "sc4_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Find the realization of the fee invoice"
+        action: "search"
+        model: "school_deposit_realization"
+        domain: [["customer_invoice_id", "=", "REC: sc4_invoice.id"]]
+        save_as: "sc4_realization"
+        expect_count: 1
+
+      - step: "The realization settled the whole residual"
+        action: "assert"
+        target: "sc4_realization"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          amount_total:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "The invoice is fully settled"
+        action: "assert"
+        target: "sc4_invoice"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 0.0
+
+      - step: "Find the deposit credit item of the invoice after the realization"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["account_id", "=", "REC: sc4_deposit_account.id"],
+            ["credit", ">", 0.0],
+            ["move_id", "=", "EVAL: registry['sc4_deposit_inv'].move_id.id"],
+          ]
+        save_as: "sc4_source"
+        expect_count: 1
+
+      - step: "The deposit item has 0.0 left after the realization"
+        action: "assert"
+        target: "sc4_source"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 0.0
