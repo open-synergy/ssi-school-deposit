@@ -1,5 +1,6 @@
 odoo-yaml-test
 odoo14-addon-ssi-school
+odoo14-addon-ssi-school-admission
 odoo14-addon-ssi-master-data-mixin
 odoo14-addon-ssi-customer-invoice
 odoo14-addon-ssi-accounting-entry-mixin
