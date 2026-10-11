@@ -1,0 +1,1176 @@
+# Each scenario uses its own fixed codes (see T-01); no setup block.
+scenarios:
+  - name: "Deposit Admission - Deposit settles another admission term and cancel"
+    steps:
+      - step: "Setup - get sale journal"
+        action: "search"
+        model: "account.journal"
+        domain: [["type", "=", "sale"]]
+        save_as: "ci_journal"
+        limit: 1
+
+      - step: "Setup - create receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "ci_account"
+        values:
+          name: "SDAA Receivable"
+          code: "SDAAR"
+          user_type_id: "REF: account.data_account_type_receivable"
+          reconcile: true
+
+      - step: "Setup - create income account"
+        action: "create"
+        model: "account.account"
+        save_as: "account"
+        values:
+          name: "SDAA Income"
+          code: "SDAAI"
+          user_type_id: "REF: account.data_account_type_revenue"
+
+      - step: "Setup - create deposit account"
+        action: "create"
+        model: "account.account"
+        save_as: "deposit_account"
+        values:
+          name: "SDAA Deposit Liability"
+          code: "SDAAD"
+          user_type_id: "REF: account.data_account_type_current_liabilities"
+          reconcile: true
+
+      - step: "Setup - create general journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "general_journal"
+        values:
+          name: "SDAA General"
+          code: "SDAAG"
+          type: "general"
+
+      - step: "Setup - create customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "ci_type"
+        values:
+          name: "SDAA Invoice Type"
+          code: "SDAA"
+          journal_id: "REC: ci_journal.id"
+          receivable_account_id: "REC: ci_account.id"
+
+      - step: "Setup - create deposit product"
+        action: "create"
+        model: "product.product"
+        save_as: "deposit_product"
+        values:
+          name: "SDAA Deposit Product"
+          type: "service"
+
+      - step: "Setup - create fee product"
+        action: "create"
+        model: "product.product"
+        save_as: "product"
+        values:
+          name: "SDAA Fee Product"
+          type: "service"
+          list_price: 600000.0
+
+      - step: "Setup - create pricelist"
+        action: "create"
+        model: "product.pricelist"
+        save_as: "pricelist"
+        values:
+          name: "SDAA Pricelist"
+          currency_id: "REC: company.currency_id.id"
+
+      - step: "Setup - create deposit type"
+        action: "create"
+        model: "school_deposit_type"
+        save_as: "deposit_type"
+        values:
+          name: "SDAA Deposit Type"
+          code: "SDATA"
+          deposit_account_id: "REC: deposit_account.id"
+          realization_journal_id: "REC: general_journal.id"
+          source_product_ids:
+            - - 6
+              - 0
+              - - "REC: deposit_product.id"
+          target_product_ids:
+            - - 6
+              - 0
+              - - "REC: product.id"
+
+      - step: "Setup - create grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Grade Type SDAA"
+          code: "GTSDAA"
+          sequence: 10
+
+      - step: "Setup - create academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "2024/2025 SDAA"
+          code: "AYSDAA"
+          date_start: "2024-07-01"
+          date_end: "2025-06-30"
+
+      - step: "Setup - create academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term"
+        values:
+          name: "Semester SDAA"
+          code: "SMSDAA"
+          date_start: "2024-07-01"
+          date_end: "2025-06-30"
+          year_id: "REC: academic_year.id"
+          enrollment_state: "open"
+
+      - step: "Setup - create school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "School SDAA"
+          code: "SCHSDAA"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Setup - create grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade"
+        values:
+          name: "Grade SDAA"
+          code: "GSDAA"
+          sequence: 10
+          type_id: "REC: grade_type.id"
+
+      - step: "Setup - create student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact"
+        values:
+          name: "Student Contact SDAA"
+
+      - step: "Setup - create payment template"
+        action: "create"
+        model: "school_admission_payment_template"
+        save_as: "payment_template"
+        values:
+          customer_invoice_type_id: "REC: ci_type.id"
+          name: "Payment Template SDAA"
+          code: "SDAPTA"
+          school_id: "REC: school.id"
+          grade_id: "REC: grade.id"
+          academic_term_id: "REC: academic_term.id"
+          term_ids:
+            - - 0
+              - 0
+              - name: "Deposit Term SDAA"
+                sequence: 10
+                detail_ids:
+                  - - 0
+                    - 0
+                    - product_id: "REC: deposit_product.id"
+                      name: "Deposit Term line SDAA"
+                      account_id: "REC: deposit_account.id"
+                      uom_quantity: 1.0
+                      uom_id: "REF: uom.product_uom_unit"
+                      price_unit: 1000000.0
+            - - 0
+              - 0
+              - name: "Fee Term SDAA"
+                sequence: 20
+                detail_ids:
+                  - - 0
+                    - 0
+                    - product_id: "REC: product.id"
+                      name: "Fee Term line SDAA"
+                      account_id: "REC: account.id"
+                      uom_quantity: 1.0
+                      uom_id: "REF: uom.product_uom_unit"
+                      price_unit: 600000.0
+
+      - step: "Create admission"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission"
+        values:
+          user_id: "REF: base.user_admin"
+          customer_invoice_type_id: "REC: ci_type.id"
+          receivable_account_id: "REC: ci_account.id"
+          date: "2024-07-01"
+          academic_year_id: "REC: academic_year.id"
+          academic_term_id: "REC: academic_term.id"
+          school_id: "REC: school.id"
+          grade_id: "REC: grade.id"
+          student_id: "REC: contact.id"
+          payment_template_id: "REC: payment_template.id"
+          pricelist_id: "REC: pricelist.id"
+          currency_id: "REC: company.currency_id.id"
+          receivable_journal_id: "REC: ci_journal.id"
+
+      - step: "Confirm admission"
+        action: "call"
+        target: "admission"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Compute payment"
+        action: "call"
+        target: "admission"
+        method: "action_compute_payment"
+        as_user: "base.user_admin"
+
+      - step: "Assert admission is confirm before approve (forces refresh, T-04)"
+        action: "assert"
+        target: "admission"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve admission"
+        action: "call"
+        target: "admission"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Get the deposit_term"
+        action: "search"
+        model: "school_admission_payment_term"
+        domain:
+          - ["admission_id", "=", "REC: admission.id"]
+          - ["name", "=", "Deposit Term SDAA"]
+        save_as: "deposit_term"
+        expect_count: 1
+
+      - step: "Create the invoice of the deposit_term"
+        action: "call"
+        target: "deposit_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+
+      - step: "Get the generated deposit_inv"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "EVAL: registry['deposit_term'].customer_invoice_id.id"]]
+        save_as: "deposit_inv"
+        expect_count: 1
+
+      - step: "Get the fee_term"
+        action: "search"
+        model: "school_admission_payment_term"
+        domain:
+          - ["admission_id", "=", "REC: admission.id"]
+          - ["name", "=", "Fee Term SDAA"]
+        save_as: "fee_term"
+        expect_count: 1
+
+      - step: "Create the invoice of the fee_term"
+        action: "call"
+        target: "fee_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+
+      - step: "Get the generated fee_inv"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "EVAL: registry['fee_term'].customer_invoice_id.id"]]
+        save_as: "fee_inv"
+        expect_count: 1
+
+      - step: "Confirm the deposit invoice"
+        action: "call"
+        target: "deposit_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the deposit invoice"
+        action: "call"
+        target: "deposit_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Confirm the fee invoice, which realizes the deposit"
+        action: "call"
+        target: "fee_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the fee invoice, which realizes the deposit"
+        action: "call"
+        target: "fee_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Search realizations of the fee_inv"
+        action: "search"
+        model: "school_deposit_realization"
+        domain: [["customer_invoice_id", "=", "REC: fee_inv.id"]]
+        save_as: "realization"
+        expect_count: 1
+
+      - step: "Assert the realization is done and settles 600000"
+        action: "assert"
+        target: "realization"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          amount_total:
+            type: "value"
+            expected: 600000.0
+
+      - step: "Assert the admission separates the deposit"
+        action: "assert"
+        target: "admission"
+        refresh: true
+        asserts:
+          amount_total:
+            type: "value"
+            expected: 1600000.0
+          amount_paid:
+            type: "value"
+            expected: 600000.0
+          amount_deposit_realized:
+            type: "value"
+            expected: 600000.0
+          amount_other_credit:
+            type: "value"
+            expected: 0.0
+          amount_payment:
+            type: "value"
+            expected: 0.0
+
+      - step: "Create the cancellation reason"
+        action: "create"
+        model: "base.cancel_reason"
+        save_as: "cancel_reason"
+        values:
+          name: "SDA Cancel Reason"
+          code: "EVAL: 'SDACR%d' % env['base.cancel_reason'].search_count([])"
+
+      - step: "Cancel the done realization via the wizard"
+        action: "wizard"
+        model: "base.select_cancel_reason"
+        target: "realization"
+        as_user: "base.user_admin"
+        values:
+          cancel_reason_id: "REC: cancel_reason.id"
+        method: "action_confirm"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Assert the deposit summary is back to zero"
+        action: "assert"
+        target: "admission"
+        refresh: true
+        asserts:
+          amount_deposit_realized:
+            type: "value"
+            expected: 0.0
+          amount_other_credit:
+            type: "value"
+            expected: 0.0
+
+  - name: "Deposit Admission - Admission deposit settles an enrollment invoice"
+    steps:
+      - step: "Setup - get sale journal"
+        action: "search"
+        model: "account.journal"
+        domain: [["type", "=", "sale"]]
+        save_as: "ci_journal"
+        limit: 1
+
+      - step: "Setup - create receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "ci_account"
+        values:
+          name: "SDAB Receivable"
+          code: "SDABR"
+          user_type_id: "REF: account.data_account_type_receivable"
+          reconcile: true
+
+      - step: "Setup - create income account"
+        action: "create"
+        model: "account.account"
+        save_as: "account"
+        values:
+          name: "SDAB Income"
+          code: "SDABI"
+          user_type_id: "REF: account.data_account_type_revenue"
+
+      - step: "Setup - create deposit account"
+        action: "create"
+        model: "account.account"
+        save_as: "deposit_account"
+        values:
+          name: "SDAB Deposit Liability"
+          code: "SDABD"
+          user_type_id: "REF: account.data_account_type_current_liabilities"
+          reconcile: true
+
+      - step: "Setup - create general journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "general_journal"
+        values:
+          name: "SDAB General"
+          code: "SDABG"
+          type: "general"
+
+      - step: "Setup - create customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "ci_type"
+        values:
+          name: "SDAB Invoice Type"
+          code: "SDAB"
+          journal_id: "REC: ci_journal.id"
+          receivable_account_id: "REC: ci_account.id"
+
+      - step: "Setup - create deposit product"
+        action: "create"
+        model: "product.product"
+        save_as: "deposit_product"
+        values:
+          name: "SDAB Deposit Product"
+          type: "service"
+
+      - step: "Setup - create fee product"
+        action: "create"
+        model: "product.product"
+        save_as: "product"
+        values:
+          name: "SDAB Fee Product"
+          type: "service"
+          list_price: 600000.0
+
+      - step: "Setup - create pricelist"
+        action: "create"
+        model: "product.pricelist"
+        save_as: "pricelist"
+        values:
+          name: "SDAB Pricelist"
+          currency_id: "REC: company.currency_id.id"
+
+      - step: "Setup - create deposit type"
+        action: "create"
+        model: "school_deposit_type"
+        save_as: "deposit_type"
+        values:
+          name: "SDAB Deposit Type"
+          code: "SDATB"
+          deposit_account_id: "REC: deposit_account.id"
+          realization_journal_id: "REC: general_journal.id"
+          source_product_ids:
+            - - 6
+              - 0
+              - - "REC: deposit_product.id"
+          target_product_ids:
+            - - 6
+              - 0
+              - - "REC: product.id"
+
+      - step: "Setup - create grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Grade Type SDAB"
+          code: "GTSDAB"
+          sequence: 10
+
+      - step: "Setup - create academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "2024/2025 SDAB"
+          code: "AYSDAB"
+          date_start: "2024-07-01"
+          date_end: "2025-06-30"
+
+      - step: "Setup - create academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term"
+        values:
+          name: "Semester SDAB"
+          code: "SMSDAB"
+          date_start: "2024-07-01"
+          date_end: "2025-06-30"
+          year_id: "REC: academic_year.id"
+          enrollment_state: "open"
+
+      - step: "Setup - create school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "School SDAB"
+          code: "SCHSDAB"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Setup - create grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade"
+        values:
+          name: "Grade SDAB"
+          code: "GSDAB"
+          sequence: 10
+          type_id: "REC: grade_type.id"
+
+      - step: "Setup - create student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact"
+        values:
+          name: "Student Contact SDAB"
+
+      - step: "Setup - create payment template"
+        action: "create"
+        model: "school_admission_payment_template"
+        save_as: "payment_template"
+        values:
+          customer_invoice_type_id: "REC: ci_type.id"
+          name: "Payment Template SDAB"
+          code: "SDAPTB"
+          school_id: "REC: school.id"
+          grade_id: "REC: grade.id"
+          academic_term_id: "REC: academic_term.id"
+          term_ids:
+            - - 0
+              - 0
+              - name: "Deposit Term SDAB"
+                sequence: 10
+                detail_ids:
+                  - - 0
+                    - 0
+                    - product_id: "REC: deposit_product.id"
+                      name: "Deposit Term line SDAB"
+                      account_id: "REC: deposit_account.id"
+                      uom_quantity: 1.0
+                      uom_id: "REF: uom.product_uom_unit"
+                      price_unit: 1000000.0
+
+      - step: "Create admission"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission"
+        values:
+          user_id: "REF: base.user_admin"
+          customer_invoice_type_id: "REC: ci_type.id"
+          receivable_account_id: "REC: ci_account.id"
+          date: "2024-07-01"
+          academic_year_id: "REC: academic_year.id"
+          academic_term_id: "REC: academic_term.id"
+          school_id: "REC: school.id"
+          grade_id: "REC: grade.id"
+          student_id: "REC: contact.id"
+          payment_template_id: "REC: payment_template.id"
+          pricelist_id: "REC: pricelist.id"
+          currency_id: "REC: company.currency_id.id"
+          receivable_journal_id: "REC: ci_journal.id"
+
+      - step: "Confirm admission"
+        action: "call"
+        target: "admission"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Compute payment"
+        action: "call"
+        target: "admission"
+        method: "action_compute_payment"
+        as_user: "base.user_admin"
+
+      - step: "Assert admission is confirm before approve (forces refresh, T-04)"
+        action: "assert"
+        target: "admission"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve admission"
+        action: "call"
+        target: "admission"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Get the deposit_term"
+        action: "search"
+        model: "school_admission_payment_term"
+        domain:
+          - ["admission_id", "=", "REC: admission.id"]
+          - ["name", "=", "Deposit Term SDAB"]
+        save_as: "deposit_term"
+        expect_count: 1
+
+      - step: "Create the invoice of the deposit_term"
+        action: "call"
+        target: "deposit_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+
+      - step: "Get the generated deposit_inv"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "EVAL: registry['deposit_term'].customer_invoice_id.id"]]
+        save_as: "deposit_inv"
+        expect_count: 1
+
+      - step: "Confirm the deposit invoice"
+        action: "call"
+        target: "deposit_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the deposit invoice"
+        action: "call"
+        target: "deposit_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Setup - create grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class"
+        values:
+          name: "Class SDAB"
+          code: "CLASDAB"
+          school_id: "REC: school.id"
+          grade_id: "REC: grade.id"
+
+      - step: "Setup - create student"
+        action: "create"
+        model: "school_student"
+        save_as: "student"
+        values:
+          name: "Student SDAB"
+          code: "STUSDAB"
+          contact_id: "REC: contact.id"
+          school_id: "REC: school.id"
+
+      - step: "Create enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment"
+        values:
+          customer_invoice_type_id: "REC: ci_type.id"
+          receivable_account_id: "REC: ci_account.id"
+          receivable_journal_id: "REC: ci_journal.id"
+          date: "2024-07-01"
+          academic_year_id: "REC: academic_year.id"
+          academic_term_id: "REC: academic_term.id"
+          school_id: "REC: school.id"
+          grade_id: "REC: grade.id"
+          grade_class_id: "REC: grade_class.id"
+          student_id: "REC: student.id"
+          currency_id: "REC: company.currency_id.id"
+
+      - step: "Create enrollment payment term"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "enr_term"
+        values:
+          enrollment_id: "REC: enrollment.id"
+          name: "Term 1 SDAB"
+          sequence: 10
+
+      - step: "Create detail on the enrollment term"
+        action: "create"
+        model: "school_enrollment_payment_term_detail"
+        values:
+          term_id: "REC: enr_term.id"
+          product_id: "REC: product.id"
+          name: "Fee SDAB"
+          account_id: "REC: account.id"
+          uom_quantity: 1.0
+          uom_id: "REF: uom.product_uom_unit"
+          price_unit: 600000.0
+
+      - step: "Confirm enrollment"
+        action: "call"
+        target: "enrollment"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Assert enrollment is confirm before approve (forces refresh, T-04)"
+        action: "assert"
+        target: "enrollment"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve enrollment"
+        action: "call"
+        target: "enrollment"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create customer invoice from the enrollment term"
+        action: "call"
+        target: "enr_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+
+      - step: "Get the enrollment invoice"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["customer_document_number", "=", "REC: enrollment.name"]]
+        save_as: "enr_inv"
+        expect_count: 1
+
+      - step: "Confirm the enrollment invoice, which realizes the admission deposit"
+        action: "call"
+        target: "enr_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the enrollment invoice, which realizes the admission deposit"
+        action: "call"
+        target: "enr_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Search realizations of the enr_inv"
+        action: "search"
+        model: "school_deposit_realization"
+        domain: [["customer_invoice_id", "=", "REC: enr_inv.id"]]
+        save_as: "realization"
+        expect_count: 1
+
+      - step: "Assert the realization is done and settles 600000"
+        action: "assert"
+        target: "realization"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          amount_total:
+            type: "value"
+            expected: 600000.0
+
+      - step: "Assert the admission deposit summary is untouched"
+        action: "assert"
+        target: "admission"
+        refresh: true
+        asserts:
+          amount_deposit_realized:
+            type: "value"
+            expected: 0.0
+          amount_other_credit:
+            type: "value"
+            expected: 0.0
+
+      - step: "Assert the enrollment separates the deposit"
+        action: "assert"
+        target: "enrollment"
+        refresh: true
+        asserts:
+          amount_deposit_realized:
+            type: "value"
+            expected: 600000.0
+          amount_other_credit:
+            type: "value"
+            expected: 0.0
+
+  - name: "Deposit Admission - Deposit of another partner is not used"
+    steps:
+      - step: "Setup - get sale journal"
+        action: "search"
+        model: "account.journal"
+        domain: [["type", "=", "sale"]]
+        save_as: "ci_journal"
+        limit: 1
+
+      - step: "Setup - create receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "ci_account"
+        values:
+          name: "SDAC Receivable"
+          code: "SDACR"
+          user_type_id: "REF: account.data_account_type_receivable"
+          reconcile: true
+
+      - step: "Setup - create income account"
+        action: "create"
+        model: "account.account"
+        save_as: "account"
+        values:
+          name: "SDAC Income"
+          code: "SDACI"
+          user_type_id: "REF: account.data_account_type_revenue"
+
+      - step: "Setup - create deposit account"
+        action: "create"
+        model: "account.account"
+        save_as: "deposit_account"
+        values:
+          name: "SDAC Deposit Liability"
+          code: "SDACD"
+          user_type_id: "REF: account.data_account_type_current_liabilities"
+          reconcile: true
+
+      - step: "Setup - create general journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "general_journal"
+        values:
+          name: "SDAC General"
+          code: "SDACG"
+          type: "general"
+
+      - step: "Setup - create customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "ci_type"
+        values:
+          name: "SDAC Invoice Type"
+          code: "SDAC"
+          journal_id: "REC: ci_journal.id"
+          receivable_account_id: "REC: ci_account.id"
+
+      - step: "Setup - create deposit product"
+        action: "create"
+        model: "product.product"
+        save_as: "deposit_product"
+        values:
+          name: "SDAC Deposit Product"
+          type: "service"
+
+      - step: "Setup - create fee product"
+        action: "create"
+        model: "product.product"
+        save_as: "product"
+        values:
+          name: "SDAC Fee Product"
+          type: "service"
+          list_price: 600000.0
+
+      - step: "Setup - create pricelist"
+        action: "create"
+        model: "product.pricelist"
+        save_as: "pricelist"
+        values:
+          name: "SDAC Pricelist"
+          currency_id: "REC: company.currency_id.id"
+
+      - step: "Setup - create deposit type"
+        action: "create"
+        model: "school_deposit_type"
+        save_as: "deposit_type"
+        values:
+          name: "SDAC Deposit Type"
+          code: "SDATC"
+          deposit_account_id: "REC: deposit_account.id"
+          realization_journal_id: "REC: general_journal.id"
+          source_product_ids:
+            - - 6
+              - 0
+              - - "REC: deposit_product.id"
+          target_product_ids:
+            - - 6
+              - 0
+              - - "REC: product.id"
+
+      - step: "Setup - create grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Grade Type SDAC"
+          code: "GTSDAC"
+          sequence: 10
+
+      - step: "Setup - create academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "2024/2025 SDAC"
+          code: "AYSDAC"
+          date_start: "2024-07-01"
+          date_end: "2025-06-30"
+
+      - step: "Setup - create academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term"
+        values:
+          name: "Semester SDAC"
+          code: "SMSDAC"
+          date_start: "2024-07-01"
+          date_end: "2025-06-30"
+          year_id: "REC: academic_year.id"
+          enrollment_state: "open"
+
+      - step: "Setup - create school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "School SDAC"
+          code: "SCHSDAC"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Setup - create grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade"
+        values:
+          name: "Grade SDAC"
+          code: "GSDAC"
+          sequence: 10
+          type_id: "REC: grade_type.id"
+
+      - step: "Setup - create student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact"
+        values:
+          name: "Student Contact SDAC"
+
+      - step: "Setup - create payment template"
+        action: "create"
+        model: "school_admission_payment_template"
+        save_as: "payment_template"
+        values:
+          customer_invoice_type_id: "REC: ci_type.id"
+          name: "Payment Template SDAC"
+          code: "SDAPTC"
+          school_id: "REC: school.id"
+          grade_id: "REC: grade.id"
+          academic_term_id: "REC: academic_term.id"
+          term_ids:
+            - - 0
+              - 0
+              - name: "Fee Term SDAC"
+                sequence: 10
+                detail_ids:
+                  - - 0
+                    - 0
+                    - product_id: "REC: product.id"
+                      name: "Fee Term line SDAC"
+                      account_id: "REC: account.id"
+                      uom_quantity: 1.0
+                      uom_id: "REF: uom.product_uom_unit"
+                      price_unit: 600000.0
+
+      - step: "Create admission"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission"
+        values:
+          user_id: "REF: base.user_admin"
+          customer_invoice_type_id: "REC: ci_type.id"
+          receivable_account_id: "REC: ci_account.id"
+          date: "2024-07-01"
+          academic_year_id: "REC: academic_year.id"
+          academic_term_id: "REC: academic_term.id"
+          school_id: "REC: school.id"
+          grade_id: "REC: grade.id"
+          student_id: "REC: contact.id"
+          payment_template_id: "REC: payment_template.id"
+          pricelist_id: "REC: pricelist.id"
+          currency_id: "REC: company.currency_id.id"
+          receivable_journal_id: "REC: ci_journal.id"
+
+      - step: "Confirm admission"
+        action: "call"
+        target: "admission"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Compute payment"
+        action: "call"
+        target: "admission"
+        method: "action_compute_payment"
+        as_user: "base.user_admin"
+
+      - step: "Assert admission is confirm before approve (forces refresh, T-04)"
+        action: "assert"
+        target: "admission"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve admission"
+        action: "call"
+        target: "admission"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Get the fee_term"
+        action: "search"
+        model: "school_admission_payment_term"
+        domain:
+          - ["admission_id", "=", "REC: admission.id"]
+          - ["name", "=", "Fee Term SDAC"]
+        save_as: "fee_term"
+        expect_count: 1
+
+      - step: "Create the invoice of the fee_term"
+        action: "call"
+        target: "fee_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+
+      - step: "Get the generated fee_inv"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "EVAL: registry['fee_term'].customer_invoice_id.id"]]
+        save_as: "fee_inv"
+        expect_count: 1
+
+      - step: "Setup - create the other partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "other_partner"
+        values:
+          name: "Other Partner SDAC"
+
+      - step: "Create the deposit invoice of the other partner"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "deposit_inv"
+        values:
+          type_id: "REC: ci_type.id"
+          partner_id: "REC: other_partner.id"
+          date: 2026-07-15
+          date_due: 2026-09-01
+          currency_id: "REF: base.USD"
+          pricelist_id: "REF: product.list0"
+          journal_id: "REC: ci_journal.id"
+          receivable_account_id: "REC: ci_account.id"
+
+      - step: "Create the deposit line"
+        action: "create"
+        model: "customer_invoice.line"
+        values:
+          customer_invoice_id: "REC: deposit_inv.id"
+          product_id: "REC: deposit_product.id"
+          name: "SDAC deposit"
+          account_id: "REC: deposit_account.id"
+          uom_quantity: 1
+          price_unit: 400000.0
+
+      - step: "Confirm the deposit invoice of the other partner"
+        action: "call"
+        target: "deposit_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the deposit invoice of the other partner"
+        action: "call"
+        target: "deposit_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Confirm the fee invoice of the student"
+        action: "call"
+        target: "fee_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the fee invoice of the student"
+        action: "call"
+        target: "fee_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Search realizations of the fee_inv"
+        action: "search"
+        model: "school_deposit_realization"
+        domain: [["customer_invoice_id", "=", "REC: fee_inv.id"]]
+        expect_count: 0
+
+      - step: "Assert nothing was realized on the admission"
+        action: "assert"
+        target: "admission"
+        refresh: true
+        asserts:
+          amount_deposit_realized:
+            type: "value"
+            expected: 0.0
+          amount_paid:
+            type: "value"
+            expected: 0.0

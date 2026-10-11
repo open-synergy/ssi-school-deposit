@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="school_admission_view_form" model="ir.ui.view">
+    <field name="name">school_admission - form (school deposit)</field>
+    <field name="model">school_admission</field>
+    <field name="inherit_id" ref="ssi_school_admission.school_admission_view_form" />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//field[@name='amount_other_credit']" position="after">
+                <field
+                        name="amount_deposit_realized"
+                        readonly="1"
+                        attrs="{'invisible': [('amount_deposit_realized','=',0.0)]}"
+                    />
+            </xpath>
+        </data>
+    </field>
+</record>
+</odoo>
