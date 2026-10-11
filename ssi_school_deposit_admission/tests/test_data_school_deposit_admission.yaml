@@ -1161,6 +1161,7 @@ scenarios:
         action: "search"
         model: "school_deposit_realization"
         domain: [["customer_invoice_id", "=", "REC: fee_inv.id"]]
+        save_as: "_no_realization_check"
         expect_count: 0
 
       - step: "Assert nothing was realized on the admission"
