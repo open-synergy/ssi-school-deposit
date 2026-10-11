@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="policy_template_school_deposit_forfeit" model="policy.template">
+    <field name="name">Standard</field>
+    <field name="model_id" ref="model_school_deposit_forfeit" />
+    <field
+            name="state_field_id"
+            search="[('model_id.model','=','school_deposit_forfeit'),('name','=','state')]"
+        />
+    <field name="sequence" eval="100" />
+    <field name="python_code">result=True</field>
+</record>
+
+<!-- Confirm -->
+<record
+        id="policy_template_school_deposit_forfeit_confirm"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_school_deposit_forfeit" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_deposit_forfeit'),('name','=','confirm_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_deposit_forfeit'),('value','=','draft')]"
+        />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field name="group_ids" eval="[(6,0,[ref('school_deposit_forfeit_user_group')])]" />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- Restart Approval Process -->
+<record
+        id="policy_template_school_deposit_forfeit_restart_approval"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_school_deposit_forfeit" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_deposit_forfeit'),('name','=','restart_approval_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_deposit_forfeit'),('value','=','confirm')]"
+        />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+            name="group_ids"
+            eval="[(6,0,[ref('school_deposit_forfeit_validator_group')])]"
+        />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- Cancel -->
+<record
+        id="policy_template_school_deposit_forfeit_cancel"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_school_deposit_forfeit" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_deposit_forfeit'),('name','=','cancel_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_deposit_forfeit'),('value','in',['draft','confirm','done'])]"
+        />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+            name="group_ids"
+            eval="[(6,0,[ref('school_deposit_forfeit_validator_group')])]"
+        />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- Restart -->
+<record
+        id="policy_template_school_deposit_forfeit_restart"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_school_deposit_forfeit" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_deposit_forfeit'),('name','=','restart_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_deposit_forfeit'),('value','in',['cancel','reject'])]"
+        />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+            name="group_ids"
+            eval="[(6,0,[ref('school_deposit_forfeit_validator_group')])]"
+        />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- Reject -->
+<record
+        id="policy_template_school_deposit_forfeit_reject"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_school_deposit_forfeit" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_deposit_forfeit'),('name','=','reject_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_deposit_forfeit'),('value','=','confirm')]"
+        />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id in document.active_approver_user_ids.ids:
+    result = True</field>
+</record>
+
+<!-- Approve -->
+<record
+        id="policy_template_school_deposit_forfeit_approve"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_school_deposit_forfeit" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_deposit_forfeit'),('name','=','approve_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_deposit_forfeit'),('value','=','confirm')]"
+        />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id in document.active_approver_user_ids.ids:
+    result = True</field>
+</record>
+
+<!-- Manual Number -->
+<record
+        id="policy_template_school_deposit_forfeit_manual_number"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_school_deposit_forfeit" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','school_deposit_forfeit'),('name','=','manual_number_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','school_deposit_forfeit'),('value','=','draft')]"
+        />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+            name="group_ids"
+            eval="[(6,0,[ref('school_deposit_forfeit_validator_group')])]"
+        />
+    <field name="restrict_additional" eval="0" />
+</record>
+</odoo>

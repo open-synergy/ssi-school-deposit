@@ -29,6 +29,8 @@
             <xpath expr="//field[@name='active']" position="after">
                 <field name="deposit_account_id" />
                 <field name="realization_journal_id" />
+                <field name="forfeit_journal_id" />
+                <field name="forfeit_account_id" />
                 <field name="auto_realize" />
             </xpath>
             <xpath expr="//page[1]" position="before">

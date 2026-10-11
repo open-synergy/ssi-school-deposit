@@ -5,5 +5,7 @@
 from . import school_deposit_type  # noqa: F401
 from . import school_deposit_realization  # noqa: F401
 from . import school_deposit_realization_line  # noqa: F401
+from . import school_deposit_forfeit  # noqa: F401
+from . import school_deposit_forfeit_line  # noqa: F401
 from . import customer_invoice  # noqa: F401
 from . import school_enrollment  # noqa: F401

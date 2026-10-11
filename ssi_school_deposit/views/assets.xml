@@ -17,6 +17,10 @@
                 type="text/javascript"
                 src="/ssi_school_deposit/static/tests/tours/school_deposit_realization_tour.js"
             />
+        <script
+                type="text/javascript"
+                src="/ssi_school_deposit/static/tests/tours/school_deposit_forfeit_tour.js"
+            />
     </xpath>
 </template>
 </odoo>

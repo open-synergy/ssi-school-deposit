@@ -27,6 +27,12 @@
      deposit invoice is posted. Only an account that allows reconciliation is accepted.
    - **Realization Journal** _(required)_: Select the journal in which realizations of
      this type are posted. Bank and Cash journals are not offered.
+   - **Forfeit Journal**: Optionally select the journal in which forfeits of this type
+     are posted. Bank and Cash journals are not offered. Required before a School
+     Deposit Forfeit of this type can be finished.
+   - **Forfeit Account**: Optionally select the account credited when an unused deposit
+     of this type is forfeited. Required before a School Deposit Forfeit of this type
+     can be finished.
    - **Auto Realize**: Checked by default. Uncheck it to create realizations of this
      type by hand only.
 4. On the **Products** tab, fill in:

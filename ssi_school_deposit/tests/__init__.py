@@ -4,7 +4,9 @@
 
 from . import test_school_deposit_type
 from . import test_school_deposit_realization
+from . import test_school_deposit_forfeit
 from . import test_school_deposit_accounting
 from . import test_school_deposit_enrollment
 from . import test_ui_school_deposit_type
 from . import test_ui_school_deposit_realization
+from . import test_ui_school_deposit_forfeit
