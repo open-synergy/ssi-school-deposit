@@ -71,6 +71,34 @@ class SchoolDepositType(models.Model):
         "realizations of this type are created by hand only.",
     )
 
+    def _get_school_deposit_source_domain(self, partner):
+        """Return the domain of the deposit items available to a partner.
+
+        Public contract shared with the expiry and glue modules. A
+        source is a posted credit item on the Deposit Account, still
+        unreconciled, of the partner, whose entry belongs to a
+        customer invoice carrying a Deposit Product.
+
+        :param partner: the ``res.partner`` who paid the deposit
+        :return: a search domain on ``account.move.line``
+        """
+        self.ensure_one()
+        invoices = self.env["customer_invoice"].search(
+            [
+                ("partner_id", "=", partner.id),
+                ("move_id", "!=", False),
+                ("line_ids.product_id", "in", self.source_product_ids.ids),
+            ]
+        )
+        return [
+            ("account_id", "=", self.deposit_account_id.id),
+            ("partner_id", "=", partner.id),
+            ("credit", ">", 0.0),
+            ("amount_residual", "<", 0.0),
+            ("move_id.state", "=", "posted"),
+            ("move_id", "in", invoices.mapped("move_id").ids),
+        ]
+
     @api.constrains("deposit_account_id")
     def _check_deposit_account_reconcile(self):
         """Require the Deposit Account to allow reconciliation.

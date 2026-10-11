@@ -1,0 +1,368 @@
+# Single scenario: fixed codes are safe (see T-01).
+scenarios:
+  - name: "School Deposit Enrollment - Realized deposit is not an other credit"
+    steps:
+      - step: "Setup - get sale journal"
+        action: "search"
+        model: "account.journal"
+        domain: [["type", "=", "sale"]]
+        save_as: "ci_journal"
+        limit: 1
+
+      - step: "Setup - get receivable account type"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "rec_type"
+
+      - step: "Setup - get revenue account type"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "rev_type"
+
+      - step: "Setup - get liquidity account type"
+        action: "ref"
+        xml_id: "account.data_account_type_liquidity"
+        save_as: "liq_type"
+
+      - step: "Setup - create receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "ci_account"
+        values:
+          name: "SDE Receivable 2"
+          code: "SDER2"
+          user_type_id: "REC: rec_type.id"
+          reconcile: true
+
+      - step: "Setup - create income account"
+        action: "create"
+        model: "account.account"
+        save_as: "account"
+        values:
+          name: "SDE Income 2"
+          code: "SDEI2"
+          user_type_id: "REC: rev_type.id"
+
+      - step: "Setup - create liquidity account"
+        action: "create"
+        model: "account.account"
+        save_as: "liq_account"
+        values:
+          name: "SDE Liquidity 2"
+          code: "SDEL2"
+          user_type_id: "REC: liq_type.id"
+
+      - step: "Setup - create bank journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "bank_journal"
+        values:
+          name: "SDE Bank 2"
+          code: "SDEB2"
+          type: "bank"
+          default_account_id: "REC: liq_account.id"
+
+      - step: "Setup - create general journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "general_journal"
+        values:
+          name: "SDE General 2"
+          code: "SDEG2"
+          type: "general"
+
+      - step: "Setup - create customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "ci_type"
+        values:
+          name: "SDE Invoice Type 2"
+          code: "SDE2"
+          journal_id: "REC: ci_journal.id"
+          receivable_account_id: "REC: ci_account.id"
+
+      - step: "Setup - create grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Grade Type SDE2"
+          code: "GTSDE2"
+          sequence: 10
+
+      - step: "Setup - create academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "2024/2025 SDE2"
+          code: "AYSDE2"
+          date_start: "2024-07-01"
+          date_end: "2025-06-30"
+
+      - step: "Setup - create academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term"
+        values:
+          name: "Semester SDE2"
+          code: "SMSDE2"
+          date_start: "2024-07-01"
+          date_end: "2025-06-30"
+          year_id: "REC: academic_year.id"
+          enrollment_state: "open"
+
+      - step: "Setup - create school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "School SDE2"
+          code: "SCHSDE2"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Setup - create grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade"
+        values:
+          name: "Grade SDE2"
+          code: "GSDE2"
+          sequence: 10
+          type_id: "REC: grade_type.id"
+
+      - step: "Setup - create grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "grade_class"
+        values:
+          name: "Class SDE2"
+          code: "CLASDE2"
+          school_id: "REC: school.id"
+          grade_id: "REC: grade.id"
+
+      - step: "Setup - create student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact"
+        values:
+          name: "Student Contact SDE2"
+
+      - step: "Setup - create student"
+        action: "create"
+        model: "school_student"
+        save_as: "student"
+        values:
+          name: "Student SDE2"
+          code: "STUSDE2"
+          contact_id: "REC: contact.id"
+          school_id: "REC: school.id"
+
+      - step: "Create enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "enrollment"
+        values:
+          customer_invoice_type_id: "REC: ci_type.id"
+          receivable_account_id: "REC: ci_account.id"
+          receivable_journal_id: "REC: ci_journal.id"
+          date: "2024-07-01"
+          academic_year_id: "REC: academic_year.id"
+          academic_term_id: "REC: academic_term.id"
+          school_id: "REC: school.id"
+          grade_id: "REC: grade.id"
+          grade_class_id: "REC: grade_class.id"
+          student_id: "REC: student.id"
+          currency_id: "REC: company.currency_id.id"
+
+      - step: "Setup - create product"
+        action: "create"
+        model: "product.product"
+        save_as: "product"
+        values:
+          name: "School Fee SDE2"
+          type: "service"
+          list_price: 1000000.0
+
+      - step: "Create payment term"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "term"
+        values:
+          enrollment_id: "REC: enrollment.id"
+          name: "Term 1 SDE2"
+          sequence: 10
+
+      - step: "Create detail on the term"
+        action: "create"
+        model: "school_enrollment_payment_term_detail"
+        values:
+          term_id: "REC: term.id"
+          product_id: "REC: product.id"
+          name: "Fee SDE2"
+          account_id: "REC: account.id"
+          uom_quantity: 1.0
+          uom_id: "REF: uom.product_uom_unit"
+          price_unit: 1000000.0
+
+      - step: "Confirm enrollment"
+        action: "call"
+        target: "enrollment"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Assert enrollment is confirm before approve (forces refresh, T-04)"
+        action: "assert"
+        target: "enrollment"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve enrollment"
+        action: "call"
+        target: "enrollment"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create customer invoice from the term"
+        action: "call"
+        target: "term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+
+      - step: "Get the generated customer invoice"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["customer_document_number", "=", "REC: enrollment.name"]]
+        save_as: "invoice"
+        expect_count: 1
+
+      - step: "Create the reconcilable deposit account"
+        action: "create"
+        model: "account.account"
+        save_as: "deposit_account"
+        values:
+          name: "SDE Deposit Liability"
+          code: "SDED2"
+          user_type_id: "REF: account.data_account_type_current_liabilities"
+          reconcile: true
+
+      - step: "Create the deposit product"
+        action: "create"
+        model: "product.product"
+        save_as: "deposit_product"
+        values:
+          name: "SDE Deposit Product"
+          type: "service"
+
+      - step: "Create the deposit type that settles the school fee"
+        action: "create"
+        model: "school_deposit_type"
+        save_as: "deposit_type"
+        values:
+          name: "SDE Deposit Type"
+          code: "SDET2"
+          deposit_account_id: "REC: deposit_account.id"
+          realization_journal_id: "REC: general_journal.id"
+          source_product_ids:
+            - - 6
+              - 0
+              - - "REC: deposit_product.id"
+          target_product_ids:
+            - - 6
+              - 0
+              - - "REC: product.id"
+
+      - step: "Create the deposit invoice of the same partner"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "deposit_inv"
+        values:
+          type_id: "REC: ci_type.id"
+          partner_id: "EVAL: registry['invoice'].partner_id.id"
+          date: 2026-07-15
+          date_due: 2026-09-01
+          currency_id: "REF: base.USD"
+          pricelist_id: "REF: product.list0"
+          journal_id: "REC: ci_journal.id"
+          receivable_account_id: "REC: ci_account.id"
+
+      - step: "Create the deposit line"
+        action: "create"
+        model: "customer_invoice.line"
+        values:
+          customer_invoice_id: "REC: deposit_inv.id"
+          product_id: "REC: deposit_product.id"
+          name: "SDE deposit"
+          account_id: "REC: deposit_account.id"
+          uom_quantity: 1
+          price_unit: 400000.0
+
+      - step: "Confirm the deposit invoice"
+        action: "call"
+        target: "deposit_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the deposit invoice"
+        action: "call"
+        target: "deposit_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Confirm the enrollment invoice"
+        action: "call"
+        target: "invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the enrollment invoice, which realizes the deposit"
+        action: "call"
+        target: "invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Assert the billing breakdown separates the deposit"
+        action: "assert"
+        target: "enrollment"
+        refresh: true
+        asserts:
+          amount_total:
+            type: "value"
+            expected: 1000000.0
+          amount_paid:
+            type: "value"
+            expected: 400000.0
+          amount_deposit_realized:
+            type: "value"
+            expected: 400000.0
+          amount_other_credit:
+            type: "value"
+            expected: 0.0
+          amount_payment:
+            type: "value"
+            expected: 0.0

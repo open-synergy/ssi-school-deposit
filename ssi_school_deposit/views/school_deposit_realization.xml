@@ -64,6 +64,16 @@
                 <field name="type_id" />
                 <field name="deposit_account_id" invisible="1" />
             </xpath>
+            <xpath expr="//header" position="inside">
+                <button
+                        name="action_compute_line"
+                        type="object"
+                        string="Compute Lines"
+                        class="oe_highlight"
+                        states="draft"
+                        groups="school_deposit_realization_user_group"
+                    />
+            </xpath>
             <xpath expr="//group[@name='header_right']" position="inside">
                 <field name="date" />
                 <field name="partner_id" />
@@ -82,6 +92,9 @@
                 <page name="accounting" string="Accounting">
                     <group name="accounting_1" colspan="4" col="2">
                         <field name="journal_id" />
+                        <field name="receivable_account_id" />
+                        <field name="move_id" />
+                        <field name="receivable_move_line_id" />
                     </group>
                 </page>
                 <page name="line" string="Lines">
@@ -129,5 +142,13 @@
         action="school_deposit_realization_action"
         groups="school_deposit_realization_viewer_group"
         sequence="10"
+    />
+<menuitem
+        id="school_deposit_reprocess_menu"
+        name="Reprocess Deposit Realizations"
+        parent="menu_school_deposit"
+        action="school_deposit_reprocess_action"
+        groups="school_deposit_realization_validator_group"
+        sequence="20"
     />
 </odoo>

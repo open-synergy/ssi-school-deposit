@@ -4,7 +4,9 @@
 
 from datetime import date as datetime_date
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
+from odoo.tools import float_compare
 
 from odoo.addons.ssi_decorator import ssi_decorator
 
@@ -19,9 +21,11 @@ class SchoolDepositRealization(models.Model):
     credit journal item the amount is taken from. The header is meant
     to credit the partner's receivable and each line to debit the
     deposit account, the reverse of the customer invoice's own entry.
-    This first version only carries the document and its workflow --
-    ``draft``, ``confirm``, ``reject`` and ``cancel`` -- and has no
-    accounting effect yet.
+    When the document is finished it books the entry (debit deposit
+    account per line, credit receivable of the invoice) and reconciles
+    it against both the deposit credits and the invoice. Cancelling a
+    finished document undoes the reconciliation and deletes the entry,
+    restoring the remaining deposit and the invoice residual.
     """
 
     _name = "school_deposit_realization"
@@ -80,6 +84,7 @@ class SchoolDepositRealization(models.Model):
 
     # Accounting Entry Header Mixin (``mixin.account_move``)
     _journal_id_field_name = "journal_id"
+    _move_id_field_name = "move_id"
     _accounting_date_field_name = "date"
     _currency_id_field_name = "currency_id"
     _company_currency_id_field_name = "company_currency_id"
@@ -87,6 +92,7 @@ class SchoolDepositRealization(models.Model):
     # Accounting Move Single Line Mixin (``mixin.account_move_single_line``)
     # -- the header credits the partner's receivable, the reverse of
     # ``customer_invoice``'s debit line.
+    _account_id_field_name = "receivable_account_id"
     _partner_id_field_name = "partner_id"
     _amount_currency_field_name = "amount_total"
     _date_field_name = "date"
@@ -196,6 +202,30 @@ class SchoolDepositRealization(models.Model):
         help="Realization lines, one per deposit journal item used. "
         "Their sum is this document's Amount Total.",
     )
+    receivable_account_id = fields.Many2one(
+        string="Receivable Account",
+        comodel_name="account.account",
+        related="customer_invoice_id.receivable_account_id",
+        store=False,
+        help="Receivable Account of the selected invoice. The header "
+        "entry line credits it.",
+    )
+    move_id = fields.Many2one(
+        string="Journal Entry",
+        comodel_name="account.move",
+        readonly=True,
+        copy=False,
+        help="Journal entry generated when this document is finished.",
+    )
+    receivable_move_line_id = fields.Many2one(
+        string="Receivable Journal Item",
+        comodel_name="account.move.line",
+        readonly=True,
+        copy=False,
+        help="Credit journal item on the Receivable Account created "
+        "together with the journal entry, then reconciled against the "
+        "receivable journal item of the invoice.",
+    )
     amount_total = fields.Monetary(
         string="Amount Total",
         currency_field="currency_id",
@@ -214,6 +244,67 @@ class SchoolDepositRealization(models.Model):
         """
         for record in self:
             record.amount_total = sum(record.line_ids.mapped("amount"))
+
+    def _get_school_deposit_allowed_amount(self):
+        """Return the amount this document may settle on its invoice.
+
+        It is the smaller of the invoice residual and the invoice
+        lines of the Payable Products, minus the amount reserved by
+        extension modules (see ``customer_invoice``), never below
+        zero.
+
+        :return: allowed amount in the document currency
+        """
+        self.ensure_one()
+        invoice = self.customer_invoice_id
+        targets = self.type_id.target_product_ids
+        payable = sum(
+            invoice.line_ids.filtered(lambda line: line.product_id in targets).mapped(
+                "price_subtotal"
+            )
+        )
+        amount = min(invoice.amount_residual, payable)
+        amount -= invoice._get_school_deposit_reserved_amount()
+        return max(self.currency_id.round(amount), 0.0)
+
+    def action_compute_line(self):
+        """Fill the lines from the available deposit of the Partner.
+
+        :return: nothing
+        """
+        for record in self.sudo():
+            record._compute_line()
+
+    def _compute_line(self):
+        """Replace the lines with the oldest available deposit items.
+
+        Takes from the source journal items of the Type, oldest
+        first, until the allowed amount is reached.
+
+        :return: nothing
+        """
+        self.ensure_one()
+        Line = self.env["school_deposit_realization_line"]
+        self.line_ids.unlink()
+        remaining = self._get_school_deposit_allowed_amount()
+        rounding = self.currency_id.rounding
+        domain = self.type_id._get_school_deposit_source_domain(self.partner_id)
+        sources = self.env["account.move.line"].search(domain, order="date, id")
+        for source in sources:
+            if float_compare(remaining, 0.0, precision_rounding=rounding) <= 0:
+                break
+            take = min(-source.amount_residual, remaining)
+            if float_compare(take, 0.0, precision_rounding=rounding) <= 0:
+                continue
+            Line.create(
+                {
+                    "realization_id": self.id,
+                    "source_move_line_id": source.id,
+                    "account_id": self.type_id.deposit_account_id.id,
+                    "amount": take,
+                }
+            )
+            remaining -= take
 
     @api.onchange("type_id")
     def onchange_journal_id(self):
@@ -260,3 +351,117 @@ class SchoolDepositRealization(models.Model):
         ]
         res += policy_field
         return res
+
+    @ssi_decorator.pre_done_check()
+    def _01_check_amount(self):
+        """Check the lines against the invoice and the deposit items.
+
+        :raises UserError: when the total exceeds the amount allowed
+            on the invoice, or the lines take more from a source
+            journal item than it still has.
+        """
+        self.ensure_one()
+        rounding = self.currency_id.rounding
+        allowed = self._get_school_deposit_allowed_amount()
+        if float_compare(self.amount_total, allowed, precision_rounding=rounding) > 0:
+            error_message = """
+Document Type: %s
+Context: Finish document
+Database ID: %s
+Problem: Amount Total %s exceeds the amount allowed on the invoice (%s)
+Solution: Reduce the line amounts or recompute the lines
+""" % (
+                self._description,
+                self.id,
+                self.amount_total,
+                allowed,
+            )
+            raise UserError(_(error_message))
+        taken = {}
+        for line in self.line_ids:
+            source = line.source_move_line_id
+            taken[source] = taken.get(source, 0.0) + line.amount
+        for source, amount in taken.items():
+            available = -source.amount_residual
+            if float_compare(amount, available, precision_rounding=rounding) > 0:
+                error_message = """
+Document Type: %s
+Context: Finish document
+Database ID: %s
+Problem: Lines take %s from journal item '%s' which only has %s left
+Solution: Reduce the line amounts or recompute the lines
+""" % (
+                    self._description,
+                    self.id,
+                    amount,
+                    source.display_name,
+                    available,
+                )
+                raise UserError(_(error_message))
+
+    @ssi_decorator.post_done_action()
+    def _10_create_accounting_entry(self):
+        """Create and post this document's ``account.move``.
+
+        Creates the header move, the credit line to the receivable
+        account (saved to ``receivable_move_line_id``) and a debit
+        line per document line, then posts the move.
+
+        :return: nothing
+        """
+        self.ensure_one()
+        self._create_standard_move()  # Mixin
+        ml = self._create_standard_ml()  # Mixin
+        self.write({"receivable_move_line_id": ml.id})
+        for line in self.line_ids:
+            line._create_school_deposit_source_entry()
+        self._post_standard_move()  # Mixin
+
+    def _prepare_standard_move(self):
+        """Add this document's Partner to the ``account.move`` header.
+
+        :return: dict of ``account.move`` values
+        """
+        res = super()._prepare_standard_move()
+        res["partner_id"] = self.partner_id.id
+        return res
+
+    @ssi_decorator.post_done_action()
+    def _20_reconcile(self):
+        """Reconcile the entry against the deposit items and the invoice.
+
+        Each debit line is reconciled against its source journal
+        item; the receivable credit line is reconciled against the
+        receivable journal item of the invoice.
+
+        :return: nothing
+        """
+        self.ensure_one()
+        for line in self.line_ids:
+            (line.move_line_id + line.source_move_line_id).reconcile()
+        invoice_ml = self.customer_invoice_id.receivable_move_line_id
+        (self.receivable_move_line_id + invoice_ml).reconcile()
+
+    @ssi_decorator.post_cancel_action()
+    def _10_unreconcile(self):
+        """Undo the reconciliation created by ``_20_reconcile``.
+
+        Must run before ``_20_delete_accounting_entry``: the journal
+        entry cannot be deleted while its lines are reconciled.
+
+        :return: nothing
+        """
+        self.ensure_one()
+        lines = self.receivable_move_line_id + self.line_ids.mapped("move_line_id")
+        lines.remove_move_reconcile()
+
+    @ssi_decorator.post_cancel_action()
+    def _20_delete_accounting_entry(self):
+        """Delete this document's ``account.move``.
+
+        :return: nothing
+        """
+        self.ensure_one()
+        self.line_ids.write({"move_line_id": False})
+        self.write({"receivable_move_line_id": False})
+        self._delete_standard_move()  # Mixin

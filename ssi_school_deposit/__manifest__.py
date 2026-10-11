@@ -28,6 +28,7 @@
         "security/res_groups/school_deposit_realization.xml",
         "security/ir_model_access/school_deposit_type.xml",
         "security/ir_model_access/school_deposit_realization.xml",
+        "security/ir_model_access/school_deposit_reprocess.xml",
         "security/ir_rule/school_deposit_realization.xml",
         "ir_sequence/school_deposit_realization.xml",
         "sequence_template/school_deposit_realization.xml",
@@ -35,7 +36,9 @@
         "policy_template/school_deposit_realization.xml",
         "menu.xml",
         "views/school_deposit_type.xml",
+        "wizards/school_deposit_reprocess.xml",
         "views/school_deposit_realization.xml",
+        "views/school_enrollment.xml",
         "views/assets.xml",
     ],
 }
