@@ -10,6 +10,7 @@ setuptools.setup(
     install_requires=[
         'odoo14-addon-ssi_school_deposit',
         'odoo14-addon-ssi_school_deposit_admission',
+        'odoo14-addon-ssi_school_deposit_fee_waiver',
     ],
     classifiers=[
         'Programming Language :: Python',
