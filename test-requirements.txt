@@ -13,3 +13,7 @@ odoo14-addon-ssi-school-fee-waiver
 odoo14-addon-ssi-school-fee-waiver-deduction>=14.0.1.3.0.dev0
 odoo14-addon-ssi-school-fee-waiver-admission
 odoo14-addon-ssi-school-scholarship
+odoo14-addon-operating-unit
+odoo14-addon-ssi-operating-unit-mixin>=14.0.1.3.0.dev0
+odoo14-addon-ssi-financial-accounting-operating-unit
+odoo14-addon-ssi-customer-invoice-operating-unit
