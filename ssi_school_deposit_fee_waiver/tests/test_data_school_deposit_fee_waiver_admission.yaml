@@ -284,6 +284,12 @@ scenarios:
         save_as: "fee_term"
         expect_count: 1
 
+      - step: "Set the due date of the fee_term, the schedule date comes from it"
+        action: "write"
+        target: "fee_term"
+        values:
+          date_due: 2026-08-15
+
       - step: "Create the fee waiver type"
         action: "create"
         model: "school_fee_waiver_type"
