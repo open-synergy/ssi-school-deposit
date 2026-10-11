@@ -1,0 +1,453 @@
+# Copyright 2026 OpenSynergy Indonesia
+# Copyright 2026 PT. Simetri Sinergi Indonesia
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+#
+# T-01 (odoo-development-unit-test/test-traps.md): scenarios in one YAML
+# file share a single DB transaction, so this file holds exactly ONE
+# scenario and no `setup:` block. Fixture codes use the `SC3` prefix so
+# the files can run against the same database without collisions.
+options:
+  auto_refresh: true
+scenarios:
+  - name: "Deposit Scholarship - A schedule line of a draft award is not reserved"
+    steps:
+      - step: "Setup - get account types"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "sc3_rec_type"
+
+      - step: "Setup - get revenue account type"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "sc3_rev_type"
+      - step: "Setup - get expense account type"
+        action: "ref"
+        xml_id: "account.data_account_type_expenses"
+        save_as: "sc3_exp_type"
+      - step: "Setup - get liability account type"
+        action: "ref"
+        xml_id: "account.data_account_type_current_liabilities"
+        save_as: "sc3_liab_type"
+      - step: "Setup - create receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "sc3_receivable_account"
+        values:
+          name: "SC3 Receivable"
+          code: "SC3RA"
+          user_type_id: "REC: sc3_rec_type.id"
+          reconcile: true
+      - step: "Setup - create income account"
+        action: "create"
+        model: "account.account"
+        save_as: "sc3_income_account"
+        values:
+          name: "SC3 Income"
+          code: "SC3IA"
+          user_type_id: "REC: sc3_rev_type.id"
+      - step: "Setup - create discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "sc3_discount_account"
+        values:
+          name: "SC3 Discount"
+          code: "SC3DA"
+          user_type_id: "REC: sc3_exp_type.id"
+      - step: "Setup - create deposit liability account"
+        action: "create"
+        model: "account.account"
+        save_as: "sc3_deposit_account"
+        values:
+          name: "SC3 Deposit Liability"
+          code: "SC3DL"
+          user_type_id: "REC: sc3_liab_type.id"
+          reconcile: true
+      - step: "Setup - create deduction journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sc3_deduction_journal"
+        values:
+          name: "SC3 Deduction Journal"
+          code: "SC3DJ"
+          type: "general"
+      - step: "Setup - create sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sc3_sale_journal"
+        values:
+          name: "SC3 Sale Journal"
+          code: "SC3SJ"
+          type: "sale"
+      - step: "Setup - create realization journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sc3_general_journal"
+        values:
+          name: "SC3 General Journal"
+          code: "SC3GJ"
+          type: "general"
+      - step: "Setup - create customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "sc3_ci_type"
+        values:
+          name: "SC3 Invoice Type"
+          code: "SC3CT"
+          journal_id: "REC: sc3_sale_journal.id"
+          receivable_account_id: "REC: sc3_receivable_account.id"
+      - step: "Setup - create grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "sc3_grade_type"
+        values:
+          name: "SC3 Grade Type"
+          code: "SC3GT"
+      - step: "Setup - create school"
+        action: "create"
+        model: "school"
+        save_as: "sc3_school"
+        values:
+          name: "SC3 School"
+          code: "SC3SC"
+          grade_type_id: "REC: sc3_grade_type.id"
+      - step: "Setup - create academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "sc3_academic_year"
+        values:
+          name: "SC3 Academic Year"
+          code: "SC3AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+      - step: "Setup - create academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "sc3_academic_term"
+        values:
+          name: "SC3 Term"
+          code: "SC3TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: sc3_academic_year.id"
+      - step: "Setup - create grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "sc3_grade"
+        values:
+          name: "SC3 Grade"
+          code: "SC3GR"
+          type_id: "REC: sc3_grade_type.id"
+      - step: "Setup - create grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "sc3_grade_class"
+        values:
+          name: "SC3 Class"
+          code: "SC3CL"
+          school_id: "REC: sc3_school.id"
+          grade_id: "REC: sc3_grade.id"
+      - step: "Setup - create student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "sc3_contact"
+        values:
+          name: "SC3 Contact"
+      - step: "Setup - create student"
+        action: "create"
+        model: "school_student"
+        save_as: "sc3_student"
+        values:
+          name: "SC3 Student"
+          code: "SC3ST"
+          contact_id: "REC: sc3_contact.id"
+          school_id: "REC: sc3_school.id"
+      - step: "Setup - create enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "sc3_enrollment"
+        values:
+          academic_year_id: "REC: sc3_academic_year.id"
+          academic_term_id: "REC: sc3_academic_term.id"
+          school_id: "REC: sc3_school.id"
+          grade_id: "REC: sc3_grade.id"
+          grade_class_id: "REC: sc3_grade_class.id"
+          student_id: "REC: sc3_student.id"
+          currency_id: "REC: company.currency_id.id"
+          receivable_journal_id: "REC: sc3_sale_journal.id"
+          receivable_account_id: "REC: sc3_receivable_account.id"
+          customer_invoice_type_id: "REC: sc3_ci_type.id"
+      - step: "Setup - create product Fee Product"
+        action: "create"
+        model: "product.product"
+        save_as: "sc3_fee_product"
+        values:
+          name: "SC3 Fee Product"
+          type: "service"
+      - step: "Setup - create product Deposit Product"
+        action: "create"
+        model: "product.product"
+        save_as: "sc3_deposit_product"
+        values:
+          name: "SC3 Deposit Product"
+          type: "service"
+      - step: "Setup - create deposit type"
+        action: "create"
+        model: "school_deposit_type"
+        save_as: "sc3_deposit_type"
+        values:
+          name: "SC3 Deposit Type"
+          code: "SC3DT"
+          deposit_account_id: "REC: sc3_deposit_account.id"
+          realization_journal_id: "REC: sc3_general_journal.id"
+          source_product_ids:
+            - - 6
+              - 0
+              - - "REC: sc3_deposit_product.id"
+          target_product_ids:
+            - - 6
+              - 0
+              - - "REC: sc3_fee_product.id"
+
+      - step: "Setup - create analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "sc3_analytic"
+        values:
+          name: "SC3 Analytic"
+
+      - step: "Setup - create funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "sc3_funding_source"
+        values:
+          name: "SC3 Funding Source"
+          code: "SC3FS"
+          analytic_account_id: "REC: sc3_analytic.id"
+
+      - step: "Setup - create scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "sc3_sch_type"
+        values:
+          name: "SC3 Scholarship Type"
+          code: "SC3SY"
+          deduction_journal_id: "REC: sc3_deduction_journal.id"
+          discount_account_id: "REC: sc3_discount_account.id"
+
+      - step: "Setup - create scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "sc3_program"
+        values:
+          name: "SC3 Program"
+          code: "SC3PG"
+          type_id: "REC: sc3_sch_type.id"
+          school_id: "REC: sc3_school.id"
+          academic_year_id: "REC: sc3_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: sc3_funding_source.id"]]]
+          deduction_journal_id: "REC: sc3_deduction_journal.id"
+          discount_account_id: "REC: sc3_discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: sc3_fee_product.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+      - step: "Create the payment term Fee Term"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "sc3_term"
+        values:
+          enrollment_id: "REC: sc3_enrollment.id"
+          name: "SC3 Fee Term"
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: sc3_fee_product.id"
+                name: "SC3 Fee Term line"
+                account_id: "REC: sc3_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create the scholarship award, 40 percent on the scope product"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "sc3_award"
+        values:
+          program_id: "REC: sc3_program.id"
+          student_id: "REC: sc3_student.id"
+          enrollment_id: "REC: sc3_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: sc3_discount_account.id"
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "SC3 Benefit"
+                product_id: "REC: sc3_fee_product.id"
+                price_unit: 1000000.0
+                percentage: 40.0
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: sc3_funding_source.id"
+                percentage: 100.0
+
+      - step: "Create a scheduled schedule line under the draft award"
+        action: "create"
+        model: "school_scholarship_award_schedule"
+        save_as: "sc3_schedule"
+        values:
+          benefit_id: "EVAL: registry['sc3_award'].benefit_ids[0].id"
+          payment_term_id: "REC: sc3_term.id"
+          date: "REC: sc3_term.date_invoice"
+          state: "scheduled"
+
+      - step: "The schedule line is scheduled but its award is still draft"
+        action: "assert"
+        target: "sc3_schedule"
+        asserts:
+          state:
+            type: "value"
+            expected: "scheduled"
+          amount_planned:
+            type: "value"
+            expected: 400000.0
+      - step: "Create the invoice of the term term"
+        action: "call"
+        target: "sc3_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+      - step: "Get the generated invoice invoice"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "REC: sc3_term.customer_invoice_id.id"]]
+        save_as: "sc3_invoice"
+        expect_count: 1
+      - step: "Confirm the invoice invoice"
+        action: "call"
+        target: "sc3_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Create the deposit invoice of the same partner"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "sc3_deposit_inv"
+        values:
+          type_id: "REC: sc3_ci_type.id"
+          partner_id: "EVAL: registry['sc3_invoice'].partner_id.id"
+          date: 2026-07-15
+          date_due: 2026-09-01
+          currency_id: "REF: base.USD"
+          pricelist_id: "REF: product.list0"
+          journal_id: "REC: sc3_sale_journal.id"
+          receivable_account_id: "REC: sc3_receivable_account.id"
+      - step: "Create the deposit line"
+        action: "create"
+        model: "customer_invoice.line"
+        values:
+          customer_invoice_id: "REC: sc3_deposit_inv.id"
+          product_id: "REC: sc3_deposit_product.id"
+          name: "SC3 deposit"
+          account_id: "REC: sc3_deposit_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+      - step: "Confirm the deposit invoice"
+        action: "call"
+        target: "sc3_deposit_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the invoice deposit_inv"
+        action: "call"
+        target: "sc3_deposit_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+      - step: "Find the deposit credit item of the invoice before the realization"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["account_id", "=", "REC: sc3_deposit_account.id"],
+            ["credit", ">", 0.0],
+            ["move_id", "=", "EVAL: registry['sc3_deposit_inv'].move_id.id"],
+          ]
+        save_as: "sc3_source"
+        expect_count: 1
+      - step: "The deposit item has 1000000.0 left before the realization"
+        action: "assert"
+        target: "sc3_source"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: -1000000.0
+      - step: "Approve the invoice invoice"
+        action: "call"
+        target: "sc3_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Find the realization of the fee invoice"
+        action: "search"
+        model: "school_deposit_realization"
+        domain: [["customer_invoice_id", "=", "REC: sc3_invoice.id"]]
+        save_as: "sc3_realization"
+        expect_count: 1
+
+      - step: "The realization settled the whole residual"
+        action: "assert"
+        target: "sc3_realization"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          amount_total:
+            type: "value"
+            expected: 1000000.0
+
+      - step: "The invoice is fully settled"
+        action: "assert"
+        target: "sc3_invoice"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 0.0
+
+      - step: "Find the deposit credit item of the invoice after the realization"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["account_id", "=", "REC: sc3_deposit_account.id"],
+            ["credit", ">", 0.0],
+            ["move_id", "=", "EVAL: registry['sc3_deposit_inv'].move_id.id"],
+          ]
+        save_as: "sc3_source"
+        expect_count: 1
+
+      - step: "The deposit item has 0.0 left after the realization"
+        action: "assert"
+        target: "sc3_source"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 0.0

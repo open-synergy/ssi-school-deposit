@@ -1,0 +1,474 @@
+# Copyright 2026 OpenSynergy Indonesia
+# Copyright 2026 PT. Simetri Sinergi Indonesia
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+#
+# T-01 (odoo-development-unit-test/test-traps.md): scenarios in one YAML
+# file share a single DB transaction, so this file holds exactly ONE
+# scenario and no `setup:` block. Fixture codes use the `SC1` prefix so
+# the files can run against the same database without collisions.
+options:
+  auto_refresh: true
+scenarios:
+  - name: "Deposit Scholarship - Realization leaves room for the scheduled scholarship"
+    steps:
+      - step: "Setup - get account types"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "sc1_rec_type"
+
+      - step: "Setup - get revenue account type"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "sc1_rev_type"
+      - step: "Setup - get expense account type"
+        action: "ref"
+        xml_id: "account.data_account_type_expenses"
+        save_as: "sc1_exp_type"
+      - step: "Setup - get liability account type"
+        action: "ref"
+        xml_id: "account.data_account_type_current_liabilities"
+        save_as: "sc1_liab_type"
+      - step: "Setup - create receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "sc1_receivable_account"
+        values:
+          name: "SC1 Receivable"
+          code: "SC1RA"
+          user_type_id: "REC: sc1_rec_type.id"
+          reconcile: true
+      - step: "Setup - create income account"
+        action: "create"
+        model: "account.account"
+        save_as: "sc1_income_account"
+        values:
+          name: "SC1 Income"
+          code: "SC1IA"
+          user_type_id: "REC: sc1_rev_type.id"
+      - step: "Setup - create discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "sc1_discount_account"
+        values:
+          name: "SC1 Discount"
+          code: "SC1DA"
+          user_type_id: "REC: sc1_exp_type.id"
+      - step: "Setup - create deposit liability account"
+        action: "create"
+        model: "account.account"
+        save_as: "sc1_deposit_account"
+        values:
+          name: "SC1 Deposit Liability"
+          code: "SC1DL"
+          user_type_id: "REC: sc1_liab_type.id"
+          reconcile: true
+      - step: "Setup - create deduction journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sc1_deduction_journal"
+        values:
+          name: "SC1 Deduction Journal"
+          code: "SC1DJ"
+          type: "general"
+      - step: "Setup - create sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sc1_sale_journal"
+        values:
+          name: "SC1 Sale Journal"
+          code: "SC1SJ"
+          type: "sale"
+      - step: "Setup - create realization journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sc1_general_journal"
+        values:
+          name: "SC1 General Journal"
+          code: "SC1GJ"
+          type: "general"
+      - step: "Setup - create customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "sc1_ci_type"
+        values:
+          name: "SC1 Invoice Type"
+          code: "SC1CT"
+          journal_id: "REC: sc1_sale_journal.id"
+          receivable_account_id: "REC: sc1_receivable_account.id"
+      - step: "Setup - create grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "sc1_grade_type"
+        values:
+          name: "SC1 Grade Type"
+          code: "SC1GT"
+      - step: "Setup - create school"
+        action: "create"
+        model: "school"
+        save_as: "sc1_school"
+        values:
+          name: "SC1 School"
+          code: "SC1SC"
+          grade_type_id: "REC: sc1_grade_type.id"
+      - step: "Setup - create academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "sc1_academic_year"
+        values:
+          name: "SC1 Academic Year"
+          code: "SC1AY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+      - step: "Setup - create academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "sc1_academic_term"
+        values:
+          name: "SC1 Term"
+          code: "SC1TM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: sc1_academic_year.id"
+      - step: "Setup - create grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "sc1_grade"
+        values:
+          name: "SC1 Grade"
+          code: "SC1GR"
+          type_id: "REC: sc1_grade_type.id"
+      - step: "Setup - create grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "sc1_grade_class"
+        values:
+          name: "SC1 Class"
+          code: "SC1CL"
+          school_id: "REC: sc1_school.id"
+          grade_id: "REC: sc1_grade.id"
+      - step: "Setup - create student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "sc1_contact"
+        values:
+          name: "SC1 Contact"
+      - step: "Setup - create student"
+        action: "create"
+        model: "school_student"
+        save_as: "sc1_student"
+        values:
+          name: "SC1 Student"
+          code: "SC1ST"
+          contact_id: "REC: sc1_contact.id"
+          school_id: "REC: sc1_school.id"
+      - step: "Setup - create enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "sc1_enrollment"
+        values:
+          academic_year_id: "REC: sc1_academic_year.id"
+          academic_term_id: "REC: sc1_academic_term.id"
+          school_id: "REC: sc1_school.id"
+          grade_id: "REC: sc1_grade.id"
+          grade_class_id: "REC: sc1_grade_class.id"
+          student_id: "REC: sc1_student.id"
+          currency_id: "REC: company.currency_id.id"
+          receivable_journal_id: "REC: sc1_sale_journal.id"
+          receivable_account_id: "REC: sc1_receivable_account.id"
+          customer_invoice_type_id: "REC: sc1_ci_type.id"
+      - step: "Setup - create product Fee Product"
+        action: "create"
+        model: "product.product"
+        save_as: "sc1_fee_product"
+        values:
+          name: "SC1 Fee Product"
+          type: "service"
+      - step: "Setup - create product Deposit Product"
+        action: "create"
+        model: "product.product"
+        save_as: "sc1_deposit_product"
+        values:
+          name: "SC1 Deposit Product"
+          type: "service"
+      - step: "Setup - create deposit type"
+        action: "create"
+        model: "school_deposit_type"
+        save_as: "sc1_deposit_type"
+        values:
+          name: "SC1 Deposit Type"
+          code: "SC1DT"
+          deposit_account_id: "REC: sc1_deposit_account.id"
+          realization_journal_id: "REC: sc1_general_journal.id"
+          source_product_ids:
+            - - 6
+              - 0
+              - - "REC: sc1_deposit_product.id"
+          target_product_ids:
+            - - 6
+              - 0
+              - - "REC: sc1_fee_product.id"
+
+      - step: "Setup - create analytic account for the funding source"
+        action: "create"
+        model: "account.analytic.account"
+        save_as: "sc1_analytic"
+        values:
+          name: "SC1 Analytic"
+
+      - step: "Setup - create funding source"
+        action: "create"
+        model: "school_scholarship_funding_source"
+        save_as: "sc1_funding_source"
+        values:
+          name: "SC1 Funding Source"
+          code: "SC1FS"
+          analytic_account_id: "REC: sc1_analytic.id"
+
+      - step: "Setup - create scholarship type"
+        action: "create"
+        model: "school_scholarship_type"
+        save_as: "sc1_sch_type"
+        values:
+          name: "SC1 Scholarship Type"
+          code: "SC1SY"
+          deduction_journal_id: "REC: sc1_deduction_journal.id"
+          discount_account_id: "REC: sc1_discount_account.id"
+
+      - step: "Setup - create scholarship program"
+        action: "create"
+        model: "school_scholarship_program"
+        save_as: "sc1_program"
+        values:
+          name: "SC1 Program"
+          code: "SC1PG"
+          type_id: "REC: sc1_sch_type.id"
+          school_id: "REC: sc1_school.id"
+          academic_year_id: "REC: sc1_academic_year.id"
+          funding_source_ids: [[6, 0, ["REC: sc1_funding_source.id"]]]
+          deduction_journal_id: "REC: sc1_deduction_journal.id"
+          discount_account_id: "REC: sc1_discount_account.id"
+          scope_ids:
+            - - 0
+              - 0
+              - scope_basis: "product"
+                product_id: "REC: sc1_fee_product.id"
+                benefit_type: "fee_reduction"
+                computation: "percentage"
+                percentage: 40.0
+      - step: "Create the payment term Fee Term"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "sc1_term"
+        values:
+          enrollment_id: "REC: sc1_enrollment.id"
+          name: "SC1 Fee Term"
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: sc1_fee_product.id"
+                name: "SC1 Fee Term line"
+                account_id: "REC: sc1_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create the scholarship award, 40 percent on the scope product"
+        action: "create"
+        model: "school_scholarship_award"
+        save_as: "sc1_award"
+        values:
+          program_id: "REC: sc1_program.id"
+          student_id: "REC: sc1_student.id"
+          enrollment_id: "REC: sc1_enrollment.id"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          discount_account_id: "REC: sc1_discount_account.id"
+          user_id: "REF: base.user_admin"
+          benefit_ids:
+            - - 0
+              - 0
+              - name: "SC1 Benefit"
+                product_id: "REC: sc1_fee_product.id"
+                price_unit: 1000000.0
+                percentage: 40.0
+          funding_ids:
+            - - 0
+              - 0
+              - funding_source_id: "REC: sc1_funding_source.id"
+                percentage: 100.0
+
+      - step: "Confirm the scholarship award"
+        action: "call"
+        target: "sc1_award"
+        method: "action_confirm"
+        as_user: "REF: base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the scholarship award, which opens it"
+        action: "call"
+        target: "sc1_award"
+        method: "action_approve_approval"
+        as_user: "REF: base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Find the schedule line of the term"
+        action: "search"
+        model: "school_scholarship_award_schedule"
+        domain:
+          [
+            ["award_id", "=", "REC: sc1_award.id"],
+            ["payment_term_id", "=", "REC: sc1_term.id"],
+          ]
+        save_as: "sc1_schedule"
+        expect_count: 1
+
+      - step: "The schedule line is scheduled with 40 percent of the base"
+        action: "assert"
+        target: "sc1_schedule"
+        asserts:
+          state:
+            type: "value"
+            expected: "scheduled"
+          amount_planned:
+            type: "value"
+            expected: 400000.0
+      - step: "Create the invoice of the term term"
+        action: "call"
+        target: "sc1_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+      - step: "Get the generated invoice invoice"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "REC: sc1_term.customer_invoice_id.id"]]
+        save_as: "sc1_invoice"
+        expect_count: 1
+      - step: "Confirm the invoice invoice"
+        action: "call"
+        target: "sc1_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Create the deposit invoice of the same partner"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "sc1_deposit_inv"
+        values:
+          type_id: "REC: sc1_ci_type.id"
+          partner_id: "EVAL: registry['sc1_invoice'].partner_id.id"
+          date: 2026-07-15
+          date_due: 2026-09-01
+          currency_id: "REF: base.USD"
+          pricelist_id: "REF: product.list0"
+          journal_id: "REC: sc1_sale_journal.id"
+          receivable_account_id: "REC: sc1_receivable_account.id"
+      - step: "Create the deposit line"
+        action: "create"
+        model: "customer_invoice.line"
+        values:
+          customer_invoice_id: "REC: sc1_deposit_inv.id"
+          product_id: "REC: sc1_deposit_product.id"
+          name: "SC1 deposit"
+          account_id: "REC: sc1_deposit_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+      - step: "Confirm the deposit invoice"
+        action: "call"
+        target: "sc1_deposit_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the invoice deposit_inv"
+        action: "call"
+        target: "sc1_deposit_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+      - step: "Find the deposit credit item of the invoice before the realization"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["account_id", "=", "REC: sc1_deposit_account.id"],
+            ["credit", ">", 0.0],
+            ["move_id", "=", "EVAL: registry['sc1_deposit_inv'].move_id.id"],
+          ]
+        save_as: "sc1_source"
+        expect_count: 1
+      - step: "The deposit item has 1000000.0 left before the realization"
+        action: "assert"
+        target: "sc1_source"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: -1000000.0
+      - step: "Approve the invoice invoice"
+        action: "call"
+        target: "sc1_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Find the realization of the fee invoice"
+        action: "search"
+        model: "school_deposit_realization"
+        domain: [["customer_invoice_id", "=", "REC: sc1_invoice.id"]]
+        save_as: "sc1_realization"
+        expect_count: 1
+
+      - step: "The realization took only the amount the scholarship leaves"
+        action: "assert"
+        target: "sc1_realization"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          amount_total:
+            type: "value"
+            expected: 600000.0
+
+      - step: "The invoice still owes the scheduled scholarship amount"
+        action: "assert"
+        target: "sc1_invoice"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 400000.0
+
+      - step: "Find the deposit credit item of the invoice after the realization"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["account_id", "=", "REC: sc1_deposit_account.id"],
+            ["credit", ">", 0.0],
+            ["move_id", "=", "EVAL: registry['sc1_deposit_inv'].move_id.id"],
+          ]
+        save_as: "sc1_source"
+        expect_count: 1
+
+      - step: "The deposit item has 400000.0 left after the realization"
+        action: "assert"
+        target: "sc1_source"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: -400000.0
