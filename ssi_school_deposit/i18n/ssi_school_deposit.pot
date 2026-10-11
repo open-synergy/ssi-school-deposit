@@ -196,6 +196,11 @@ msgid "Can Restart Approval"
 msgstr ""
 
 #. module: ssi_school_deposit
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_reprocess_view_form
+msgid "Cancel"
+msgstr ""
+
+#. module: ssi_school_deposit
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__cancel_reason_id
 msgid "Cancel Reason"
 msgstr ""
@@ -247,6 +252,11 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_deposit
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_realization_view_form
+msgid "Compute Lines"
+msgstr ""
+
+#. module: ssi_school_deposit
 #: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__confirm_ok
 msgid ""
 "Confirm policy\n"
@@ -257,6 +267,7 @@ msgstr ""
 #. module: ssi_school_deposit
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__create_uid
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__create_uid
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess__create_uid
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__create_uid
 msgid "Created by"
 msgstr ""
@@ -264,8 +275,17 @@ msgstr ""
 #. module: ssi_school_deposit
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__create_date
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__create_date
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess__create_date
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__create_date
 msgid "Created on"
+msgstr ""
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__receivable_move_line_id
+msgid ""
+"Credit journal item on the Receivable Account created together with the "
+"journal entry, then reconciled against the receivable journal item of the "
+"invoice."
 msgstr ""
 
 #. module: ssi_school_deposit
@@ -283,6 +303,7 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_deposit
+#: model:ir.model,name:ssi_school_deposit.model_customer_invoice
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__customer_invoice_id
 msgid "Customer Invoice"
 msgstr ""
@@ -317,6 +338,11 @@ msgid "Deposit Realizations"
 msgstr ""
 
 #. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_enrollment__amount_deposit_realized
+msgid "Deposit Realized"
+msgstr ""
+
+#. module: ssi_school_deposit
 #: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization_line__account_id
 msgid ""
 "Deposit account this line debits. Defaulted from the Deposit Account of the "
@@ -339,9 +365,17 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_reprocess__type_ids
+msgid "Deposit types to realize again."
+msgstr ""
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_customer_invoice__display_name
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__display_name
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__display_name
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess__display_name
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__display_name
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_enrollment__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -383,9 +417,12 @@ msgid "Group By"
 msgstr ""
 
 #. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_customer_invoice__id
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__id
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess__id
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_enrollment__id
 msgid "ID"
 msgstr ""
 
@@ -435,8 +472,20 @@ msgid "Journal"
 msgstr ""
 
 #. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__move_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__move_id
+msgid "Journal Entry"
+msgstr ""
+
+#. module: ssi_school_deposit
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__move_line_id
 msgid "Journal Item"
+msgstr ""
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__move_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization_line__move_id
+msgid "Journal entry generated when this document is finished."
 msgstr ""
 
 #. module: ssi_school_deposit
@@ -454,15 +503,19 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_customer_invoice____last_update
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization____last_update
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line____last_update
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess____last_update
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type____last_update
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_enrollment____last_update
 msgid "Last Modified on"
 msgstr ""
 
 #. module: ssi_school_deposit
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__write_uid
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__write_uid
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess__write_uid
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__write_uid
 msgid "Last Updated by"
 msgstr ""
@@ -470,6 +523,7 @@ msgstr ""
 #. module: ssi_school_deposit
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__write_date
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__write_date
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess__write_date
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__write_date
 msgid "Last Updated on"
 msgstr ""
@@ -480,6 +534,11 @@ msgid ""
 "Liability account credited when a deposit invoice is posted. It must allow "
 "reconciliation, because a realization reconciles its journal item against "
 "the deposit credit."
+msgstr ""
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_reprocess__partner_ids
+msgid "Limit the run to these partners. Leave empty for all."
 msgstr ""
 
 #. module: ssi_school_deposit
@@ -617,16 +676,30 @@ msgid "Open customer invoice of the Partner that this realization settles."
 msgstr ""
 
 #. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_enrollment__amount_deposit_realized
+msgid ""
+"Part of the settled amount that came from finished school deposit "
+"realizations. It is not a deduction and is left out of Other Credits."
+msgstr ""
+
+#. module: ssi_school_deposit
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__partner_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__partner_id
 #: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_realization_view_search
 msgid "Partner"
 msgstr ""
 
 #. module: ssi_school_deposit
 #: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__partner_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization_line__partner_id
 msgid ""
 "Partner who paid the deposit and owes the invoice. Must match the Partner of"
 " the selected invoice and of every source journal item."
+msgstr ""
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess__partner_ids
+msgid "Partners"
 msgstr ""
 
 #. module: ssi_school_deposit
@@ -680,6 +753,23 @@ msgid ""
 msgstr ""
 
 #. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__receivable_account_id
+msgid "Receivable Account"
+msgstr ""
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__receivable_account_id
+msgid ""
+"Receivable Account of the selected invoice. The header entry line credits "
+"it."
+msgstr ""
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__receivable_move_line_id
+msgid "Receivable Journal Item"
+msgstr ""
+
+#. module: ssi_school_deposit
 #: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__reject_ok
 msgid ""
 "Reject policy\n"
@@ -690,6 +780,17 @@ msgstr ""
 #. module: ssi_school_deposit
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__rejected
 msgid "Rejected"
+msgstr ""
+
+#. module: ssi_school_deposit
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_reprocess_view_form
+msgid "Reprocess"
+msgstr ""
+
+#. module: ssi_school_deposit
+#: model:ir.actions.act_window,name:ssi_school_deposit.school_deposit_reprocess_action
+#: model:ir.ui.menu,name:ssi_school_deposit.school_deposit_reprocess_menu
+msgid "Reprocess Deposit Realizations"
 msgstr ""
 
 #. module: ssi_school_deposit
@@ -748,6 +849,11 @@ msgid "School Deposit Realizations"
 msgstr ""
 
 #. module: ssi_school_deposit
+#: model:ir.model,name:ssi_school_deposit.model_school_deposit_reprocess
+msgid "School Deposit Reprocess"
+msgstr ""
+
+#. module: ssi_school_deposit
 #: model:ir.model,name:ssi_school_deposit.model_school_deposit_type
 #: model:res.groups,name:ssi_school_deposit.school_deposit_type_group
 msgid "School Deposit Type"
@@ -757,6 +863,11 @@ msgstr ""
 #: model:ir.actions.act_window,name:ssi_school_deposit.school_deposit_type_action
 #: model:ir.ui.menu,name:ssi_school_deposit.school_deposit_type_menu
 msgid "School Deposit Types"
+msgstr ""
+
+#. module: ssi_school_deposit
+#: model:ir.model,name:ssi_school_deposit.model_school_enrollment
+msgid "School Enrollment"
 msgstr ""
 
 #. module: ssi_school_deposit
@@ -809,6 +920,11 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__activity_exception_decoration
 msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess__type_ids
+msgid "Types"
 msgstr ""
 
 #. module: ssi_school_deposit
