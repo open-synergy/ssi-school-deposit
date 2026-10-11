@@ -1,0 +1,415 @@
+# T-01 (odoo-development-unit-test/test-traps.md): the `setup:` block replays
+# before every scenario inside one un-rolled-back transaction, so every
+# unique-constrained code it creates (account, journal, deposit type) is
+# generated per replay. Document numbers are not touched: documents are
+# created with the default name `/`.
+options:
+  auto_refresh: true
+
+setup:
+  steps:
+    - step: "Get the receivable account type"
+      action: "ref"
+      xml_id: "account.data_account_type_receivable"
+      save_as: "receivable_acc_type"
+
+    - step: "Get the current liabilities account type"
+      action: "ref"
+      xml_id: "account.data_account_type_current_liabilities"
+      save_as: "liability_acc_type"
+
+    - step: "Get the revenue account type"
+      action: "ref"
+      xml_id: "account.data_account_type_revenue"
+      save_as: "income_acc_type"
+
+    - step: "Create the receivable account"
+      action: "create"
+      model: "account.account"
+      save_as: "receivable_account"
+      values:
+        code: "EVAL: 'SDRR%d' % env['account.account'].search_count([])"
+        name: "Test School Deposit Receivable Account"
+        user_type_id: "REC: receivable_acc_type.id"
+        reconcile: true
+
+    - step: "Create the reconcilable deposit account"
+      action: "create"
+      model: "account.account"
+      save_as: "deposit_account"
+      values:
+        code: "EVAL: 'SDRD%d' % env['account.account'].search_count([])"
+        name: "Test School Deposit Liability Account"
+        user_type_id: "REC: liability_acc_type.id"
+        reconcile: true
+
+    - step: "Create the contra account of the deposit entry"
+      action: "create"
+      model: "account.account"
+      save_as: "contra_account"
+      values:
+        code: "EVAL: 'SDRC%d' % env['account.account'].search_count([])"
+        name: "Test School Deposit Contra Account"
+        user_type_id: "REC: income_acc_type.id"
+
+    - step: "Create the sale journal of the customer invoice"
+      action: "create"
+      model: "account.journal"
+      save_as: "sale_journal"
+      values:
+        name:
+          "EVAL: 'Test School Deposit Sale Journal %d' %
+          env['account.journal'].search_count([])"
+        code: "EVAL: 'SDRS%d' % env['account.journal'].search_count([])"
+        type: "sale"
+
+    - step: "Create the general journal of the realization and deposit entry"
+      action: "create"
+      model: "account.journal"
+      save_as: "general_journal"
+      values:
+        name:
+          "EVAL: 'Test School Deposit General Journal %d' %
+          env['account.journal'].search_count([])"
+        code: "EVAL: 'SDRG%d' % env['account.journal'].search_count([])"
+        type: "general"
+
+    - step: "Create the deposit product"
+      action: "create"
+      model: "product.product"
+      save_as: "source_product"
+      values:
+        name: "Test School Deposit Realization Deposit Product"
+        type: "service"
+
+    - step: "Create the payable product"
+      action: "create"
+      model: "product.product"
+      save_as: "target_product"
+      values:
+        name: "Test School Deposit Realization Payable Product"
+        type: "service"
+
+    - step: "Create the deposit type"
+      action: "create"
+      model: "school_deposit_type"
+      save_as: "deposit_type"
+      values:
+        name: "Test School Deposit Realization Type"
+        code: "EVAL: 'SDRT%d' % env['school_deposit_type'].search_count([])"
+        deposit_account_id: "REC: deposit_account.id"
+        realization_journal_id: "REC: general_journal.id"
+        source_product_ids:
+          - - 6
+            - 0
+            - - "REC: source_product.id"
+        target_product_ids:
+          - - 6
+            - 0
+            - - "REC: target_product.id"
+
+    - step: "Create the customer"
+      action: "create"
+      model: "res.partner"
+      save_as: "customer"
+      values:
+        name: "Test School Deposit Realization Customer"
+        is_company: true
+
+    - step: "Create the customer invoice type"
+      action: "create"
+      model: "customer_invoice_type"
+      save_as: "invoice_type"
+      values:
+        name: "Test School Deposit Invoice Type"
+        code: "/"
+        journal_id: "REC: sale_journal.id"
+        receivable_account_id: "REC: receivable_account.id"
+
+    - step: "Create the customer invoice that is settled"
+      action: "create"
+      model: "customer_invoice"
+      save_as: "invoice"
+      values:
+        type_id: "REC: invoice_type.id"
+        partner_id: "REC: customer.id"
+        date: 2026-08-01
+        date_due: 2026-09-01
+        currency_id: "REF: base.USD"
+        journal_id: "REC: sale_journal.id"
+        receivable_account_id: "REC: receivable_account.id"
+
+    - step: "Create the posted deposit entry, credited to the deposit account"
+      action: "create"
+      model: "account.move"
+      save_as: "deposit_move"
+      values:
+        journal_id: "REC: general_journal.id"
+        date: 2026-07-15
+        ref: "Test School Deposit Entry"
+        line_ids:
+          - - 0
+            - 0
+            - name: "Test School Deposit Entry - Contra"
+              account_id: "REC: contra_account.id"
+              partner_id: "REC: customer.id"
+              debit: 500000.0
+              credit: 0.0
+          - - 0
+            - 0
+            - name: "Test School Deposit Entry - Deposit"
+              account_id: "REC: deposit_account.id"
+              partner_id: "REC: customer.id"
+              debit: 0.0
+              credit: 500000.0
+
+    - step: "Post the deposit entry"
+      action: "call"
+      target: "deposit_move"
+      method: "action_post"
+
+    - step: "Get the deposit credit journal item"
+      action: "search"
+      model: "account.move.line"
+      domain:
+        - ["move_id", "=", "REC: deposit_move.id"]
+        - ["account_id", "=", "REC: deposit_account.id"]
+      save_as: "source_line"
+      expect_count: 1
+
+scenarios:
+  - name: "School Deposit Realization - Create with a line"
+    steps:
+      - step: "Create the realization with one line"
+        action: "create"
+        model: "school_deposit_realization"
+        save_as: "realization"
+        values:
+          type_id: "REC: deposit_type.id"
+          partner_id: "REC: customer.id"
+          customer_invoice_id: "REC: invoice.id"
+          journal_id: "REC: general_journal.id"
+          date: 2026-08-10
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - source_move_line_id: "REC: source_line.id"
+                account_id: "REC: deposit_account.id"
+                amount: 150000.0
+
+      - step: "Assert the realization was created in draft"
+        action: "assert"
+        target: "realization"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          amount_total:
+            type: "value"
+            expected: 150000.0
+          line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+  - name: "School Deposit Realization - Confirm, reject and restart"
+    steps:
+      - step: "Create the realization"
+        action: "create"
+        model: "school_deposit_realization"
+        save_as: "realization"
+        values:
+          type_id: "REC: deposit_type.id"
+          partner_id: "REC: customer.id"
+          customer_invoice_id: "REC: invoice.id"
+          journal_id: "REC: general_journal.id"
+          date: 2026-08-10
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - source_move_line_id: "REC: source_line.id"
+                account_id: "REC: deposit_account.id"
+                amount: 150000.0
+
+      - step: "Confirm the realization"
+        action: "call"
+        target: "realization"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        # T-04 (test-traps.md): inline asserts force the refresh
+        # confirm->reject needs before reject_ok is read.
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Reject the realization"
+        action: "call"
+        target: "realization"
+        method: "action_reject_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "reject"
+
+      - step: "Restart the rejected realization"
+        action: "call"
+        target: "realization"
+        method: "action_restart"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  - name: "School Deposit Realization - Cancel and restart"
+    steps:
+      - step: "Create the realization"
+        action: "create"
+        model: "school_deposit_realization"
+        save_as: "realization"
+        values:
+          type_id: "REC: deposit_type.id"
+          partner_id: "REC: customer.id"
+          customer_invoice_id: "REC: invoice.id"
+          journal_id: "REC: general_journal.id"
+          date: 2026-08-10
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - source_move_line_id: "REC: source_line.id"
+                account_id: "REC: deposit_account.id"
+                amount: 150000.0
+
+      - step: "Create the cancellation reason"
+        action: "create"
+        model: "base.cancel_reason"
+        save_as: "cancel_reason"
+        values:
+          name: "SDR Cancel Reason"
+          code: "EVAL: 'SDRCR%d' % env['base.cancel_reason'].search_count([])"
+
+      - step: "Cancel the draft realization via the wizard"
+        action: "wizard"
+        model: "base.select_cancel_reason"
+        target: "realization"
+        as_user: "base.user_admin"
+        values:
+          cancel_reason_id: "REC: cancel_reason.id"
+        method: "action_confirm"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart the cancelled realization"
+        action: "call"
+        target: "realization"
+        method: "action_restart"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Confirm the restarted realization"
+        action: "call"
+        target: "realization"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Cancel the confirmed realization via the wizard"
+        action: "wizard"
+        model: "base.select_cancel_reason"
+        target: "realization"
+        as_user: "base.user_admin"
+        values:
+          cancel_reason_id: "REC: cancel_reason.id"
+        method: "action_confirm"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+  - name: "School Deposit Realization - Line Amount must be positive"
+    steps:
+      - step: "Create the realization without lines"
+        action: "create"
+        model: "school_deposit_realization"
+        save_as: "realization"
+        values:
+          type_id: "REC: deposit_type.id"
+          partner_id: "REC: customer.id"
+          customer_invoice_id: "REC: invoice.id"
+          journal_id: "REC: general_journal.id"
+          date: 2026-08-10
+          user_id: "REF: base.user_admin"
+
+      - step: "Assert the realization exists, which flushes pending writes"
+        action: "assert"
+        target: "realization"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "A line with a zero Amount is rejected"
+        action: "create"
+        model: "school_deposit_realization_line"
+        values:
+          realization_id: "REC: realization.id"
+          source_move_line_id: "REC: source_line.id"
+          account_id: "REC: deposit_account.id"
+          amount: 0.0
+        expect_error:
+          type: "ValidationError"
+          message_contains: "is not greater than zero"
+
+      - step: "A line with a negative Amount is rejected"
+        action: "create"
+        model: "school_deposit_realization_line"
+        values:
+          realization_id: "REC: realization.id"
+          source_move_line_id: "REC: source_line.id"
+          account_id: "REC: deposit_account.id"
+          amount: -10.0
+        expect_error:
+          type: "ValidationError"
+          message_contains: "is not greater than zero"
+
+  - name: "School Deposit Realization - Journal defaults from the Type"
+    steps:
+      - step: "Selecting the Type fills the Journal on the form"
+        action: "form"
+        model: "school_deposit_realization"
+        save: false
+        values:
+          type_id: "REC: deposit_type"
+        asserts:
+          journal_id:
+            type: "m2o"
+            expected: "REC: general_journal"
+
+  - name: "School Deposit Realization - Line Account defaults from the source item"
+    steps:
+      - step: "Selecting the source journal item fills the Account on the form"
+        action: "form"
+        model: "school_deposit_realization_line"
+        save: false
+        values:
+          source_move_line_id: "REC: source_line"
+        asserts:
+          account_id:
+            type: "m2o"
+            expected: "REC: deposit_account"

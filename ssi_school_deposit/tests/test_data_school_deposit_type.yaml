@@ -1,0 +1,212 @@
+# Fixture codes of the `setup:` block are generated per replay (T-01 in
+# odoo-development-unit-test/test-traps.md): the block replays before every
+# scenario inside one un-rolled-back transaction, and an account / journal
+# code is unique per company. The deposit types created in the scenarios
+# carry a literal code that is different in every scenario.
+options:
+  auto_refresh: true
+
+setup:
+  steps:
+    - step: "Get the current liabilities account type"
+      action: "ref"
+      xml_id: "account.data_account_type_current_liabilities"
+      save_as: "liability_acc_type"
+
+    - step: "Create a reconcilable deposit account"
+      action: "create"
+      model: "account.account"
+      save_as: "deposit_account"
+      values:
+        code: "EVAL: 'SDTD%d' % env['account.account'].search_count([])"
+        name: "Test School Deposit Type Deposit Account"
+        user_type_id: "REC: liability_acc_type.id"
+        reconcile: true
+
+    - step: "Create an account that does not allow reconciliation"
+      action: "create"
+      model: "account.account"
+      save_as: "plain_account"
+      values:
+        code: "EVAL: 'SDTP%d' % env['account.account'].search_count([])"
+        name: "Test School Deposit Type Plain Account"
+        user_type_id: "REC: liability_acc_type.id"
+        reconcile: false
+
+    - step: "Create the realization journal"
+      action: "create"
+      model: "account.journal"
+      save_as: "journal"
+      values:
+        name:
+          "EVAL: 'Test School Deposit Type Journal %d' %
+          env['account.journal'].search_count([])"
+        code: "EVAL: 'SDTJ%d' % env['account.journal'].search_count([])"
+        type: "general"
+
+    - step: "Create the deposit product"
+      action: "create"
+      model: "product.product"
+      save_as: "source_product"
+      values:
+        name: "Test School Deposit Type Deposit Product"
+        type: "service"
+
+    - step: "Create the payable product"
+      action: "create"
+      model: "product.product"
+      save_as: "target_product"
+      values:
+        name: "Test School Deposit Type Payable Product"
+        type: "service"
+
+scenarios:
+  - name: "School Deposit Type - Create"
+    steps:
+      - step: "Create the deposit type"
+        action: "create"
+        model: "school_deposit_type"
+        save_as: "deposit_type"
+        values:
+          name: "Test Deposit Type"
+          code: "SDT-CREATE"
+          deposit_account_id: "REC: deposit_account.id"
+          realization_journal_id: "REC: journal.id"
+          source_product_ids:
+            - - 6
+              - 0
+              - - "REC: source_product.id"
+          target_product_ids:
+            - - 6
+              - 0
+              - - "REC: target_product.id"
+
+      - step: "Assert the deposit type was created with its defaults"
+        action: "assert"
+        target: "deposit_type"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Deposit Type"
+          code:
+            type: "value"
+            expected: "SDT-CREATE"
+          active:
+            type: "value"
+            expected: true
+          auto_realize:
+            type: "value"
+            expected: true
+          deposit_account_id:
+            type: "m2o"
+            expected: "REC: deposit_account"
+          realization_journal_id:
+            type: "m2o"
+            expected: "REC: journal"
+          source_product_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: source_product"
+          target_product_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: target_product"
+
+  - name: "School Deposit Type - Edit"
+    steps:
+      - step: "Create the deposit type to edit"
+        action: "create"
+        model: "school_deposit_type"
+        save_as: "deposit_type"
+        values:
+          name: "Original Deposit Type Name"
+          code: "SDT-EDIT"
+          deposit_account_id: "REC: deposit_account.id"
+          realization_journal_id: "REC: journal.id"
+
+      - step: "Update the name and switch Auto Realize off"
+        action: "write"
+        target: "deposit_type"
+        values:
+          name: "Updated Deposit Type Name"
+          auto_realize: false
+
+      - step: "Assert the changes were saved"
+        action: "assert"
+        target: "deposit_type"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Deposit Type Name"
+          auto_realize:
+            type: "value"
+            expected: false
+
+  - name: "School Deposit Type - Delete"
+    steps:
+      - step: "Create the deposit type to delete"
+        action: "create"
+        model: "school_deposit_type"
+        save_as: "deposit_type"
+        values:
+          name: "Deposit Type To Delete"
+          code: "SDT-DELETE"
+          deposit_account_id: "REC: deposit_account.id"
+          realization_journal_id: "REC: journal.id"
+
+      - step: "Delete the deposit type"
+        action: "unlink"
+        target: "deposit_type"
+
+      - step: "Verify the deposit type no longer exists"
+        action: "search"
+        model: "school_deposit_type"
+        domain: [["code", "=", "SDT-DELETE"]]
+        save_as: "result"
+        expect_count: 0
+
+  - name: "School Deposit Type - Deposit Account must allow reconciliation"
+    steps:
+      - step: "Create a valid deposit type first, so nothing is pending"
+        action: "create"
+        model: "school_deposit_type"
+        save_as: "valid_type"
+        values:
+          name: "Valid Deposit Type"
+          code: "SDT-VALID"
+          deposit_account_id: "REC: deposit_account.id"
+          realization_journal_id: "REC: journal.id"
+
+      - step: "Assert it exists, which flushes the pending writes"
+        action: "assert"
+        target: "valid_type"
+        asserts:
+          code:
+            type: "value"
+            expected: "SDT-VALID"
+
+      - step: "A Deposit Account without reconciliation is rejected on create"
+        action: "create"
+        model: "school_deposit_type"
+        values:
+          name: "Invalid Deposit Type"
+          code: "SDT-INVALID"
+          deposit_account_id: "REC: plain_account.id"
+          realization_journal_id: "REC: journal.id"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "does not allow reconciliation"
+
+      - step: "A Deposit Account switched to one without reconciliation is rejected"
+        action: "write"
+        target: "valid_type"
+        values:
+          deposit_account_id: "REC: plain_account.id"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "does not allow reconciliation"
