@@ -22,6 +22,7 @@ Available addons
 addon | version | maintainers | summary
 --- | --- | --- | ---
 [ssi_school_deposit](ssi_school_deposit/) | 14.0.1.2.0 |  | School Deposit
+[ssi_school_deposit_admission](ssi_school_deposit_admission/) | 14.0.1.0.0 |  | School Deposit - Admission
 
 [//]: # (end addons)
 
