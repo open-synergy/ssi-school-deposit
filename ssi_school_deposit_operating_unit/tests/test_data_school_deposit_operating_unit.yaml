@@ -1,0 +1,944 @@
+# T-01 (odoo-development-unit-test/test-traps.md): the `setup:` block replays
+# before every scenario inside one un-rolled-back transaction, so every
+# unique-constrained value it creates (account, journal, type, operating
+# unit, user) is generated per replay and each scenario has its own customer
+# and its own deposit; documents are created with the default name `/`.
+options:
+  auto_refresh: true
+
+setup:
+  steps:
+    - step: "Get the receivable account type"
+      action: "ref"
+      xml_id: "account.data_account_type_receivable"
+      save_as: "receivable_acc_type"
+    - step: "Get the current liabilities account type"
+      action: "ref"
+      xml_id: "account.data_account_type_current_liabilities"
+      save_as: "liability_acc_type"
+    - step: "Get the revenue account type"
+      action: "ref"
+      xml_id: "account.data_account_type_revenue"
+      save_as: "income_acc_type"
+    - step: "Create the receivable account"
+      action: "create"
+      model: "account.account"
+      save_as: "receivable_account"
+      values:
+        code: "EVAL: 'SDOR%d' % env['account.account'].search_count([])"
+        name: "Test SDOU Receivable"
+        user_type_id: "REC: receivable_acc_type.id"
+        reconcile: true
+    - step: "Create the reconcilable deposit account"
+      action: "create"
+      model: "account.account"
+      save_as: "deposit_account"
+      values:
+        code: "EVAL: 'SDOD%d' % env['account.account'].search_count([])"
+        name: "Test SDOU Deposit Liability"
+        user_type_id: "REC: liability_acc_type.id"
+        reconcile: true
+    - step: "Create the reconcilable interunit account"
+      action: "create"
+      model: "account.account"
+      save_as: "interunit_account"
+      values:
+        code: "EVAL: 'SDOX%d' % env['account.account'].search_count([])"
+        name: "Test SDOU Interunit"
+        user_type_id: "REC: liability_acc_type.id"
+        reconcile: true
+    - step: "Create the income account of the payable invoice lines"
+      action: "create"
+      model: "account.account"
+      save_as: "income_account"
+      values:
+        code: "EVAL: 'SDOI%d' % env['account.account'].search_count([])"
+        name: "Test SDOU Income"
+        user_type_id: "REC: income_acc_type.id"
+    - step: "Create the forfeit income account"
+      action: "create"
+      model: "account.account"
+      save_as: "forfeit_account"
+      values:
+        code: "EVAL: 'SDOF%d' % env['account.account'].search_count([])"
+        name: "Test SDOU Forfeit Income"
+        user_type_id: "REC: income_acc_type.id"
+    - step: "Create the sale journal"
+      action: "create"
+      model: "account.journal"
+      save_as: "sale_journal"
+      values:
+        name:
+          "EVAL: 'Test SDOU Sale Journal %d' % env['account.journal'].search_count([])"
+        code: "EVAL: 'SDOS%d' % env['account.journal'].search_count([])"
+        type: "sale"
+    - step: "Create the general journal without any operating unit restriction"
+      action: "create"
+      model: "account.journal"
+      save_as: "general_journal"
+      values:
+        name:
+          "EVAL: 'Test SDOU General Journal %d' %
+          env['account.journal'].search_count([])"
+        code: "EVAL: 'SDOG%d' % env['account.journal'].search_count([])"
+        type: "general"
+    - step: "Create the operating unit partner A"
+      action: "create"
+      model: "res.partner"
+      save_as: "ou_a_partner"
+      values:
+        name:
+          "EVAL: 'Test SDOU Unit A Partner %d' % env['res.partner'].search_count([])"
+    - step: "Create the operating unit partner B"
+      action: "create"
+      model: "res.partner"
+      save_as: "ou_b_partner"
+      values:
+        name:
+          "EVAL: 'Test SDOU Unit B Partner %d' % env['res.partner'].search_count([])"
+    - step: "Create the operating unit A"
+      action: "create"
+      model: "operating.unit"
+      save_as: "ou_a"
+      values:
+        name: "EVAL: 'Test SDOU Unit A %d' % env['operating.unit'].search_count([])"
+        code: "EVAL: 'SDOUA%d' % env['operating.unit'].search_count([])"
+        partner_id: "REC: ou_a_partner.id"
+    - step: "Create the operating unit B"
+      action: "create"
+      model: "operating.unit"
+      save_as: "ou_b"
+      values:
+        name: "EVAL: 'Test SDOU Unit B %d' % env['operating.unit'].search_count([])"
+        code: "EVAL: 'SDOUB%d' % env['operating.unit'].search_count([])"
+        partner_id: "REC: ou_b_partner.id"
+    - step: "Create the deposit product"
+      action: "create"
+      model: "product.product"
+      save_as: "source_product"
+      values:
+        name: "Test SDOU Deposit Product"
+        type: "service"
+    - step: "Create the payable product"
+      action: "create"
+      model: "product.product"
+      save_as: "target_product"
+      values:
+        name: "Test SDOU Payable Product"
+        type: "service"
+    - step: "Create the manual-only payable product"
+      action: "create"
+      model: "product.product"
+      save_as: "manual_product"
+      values:
+        name: "Test SDOU Manual Payable Product"
+        type: "service"
+    - step: "Create the auto-realize deposit type with an interunit account"
+      action: "create"
+      model: "school_deposit_type"
+      save_as: "deposit_type"
+      values:
+        name: "Test SDOU Auto Type"
+        code: "EVAL: 'SDOT%d' % env['school_deposit_type'].search_count([])"
+        deposit_account_id: "REC: deposit_account.id"
+        realization_journal_id: "REC: general_journal.id"
+        interunit_account_id: "REC: interunit_account.id"
+        forfeit_journal_id: "REC: general_journal.id"
+        forfeit_account_id: "REC: forfeit_account.id"
+        source_product_ids:
+          - - 6
+            - 0
+            - - "REC: source_product.id"
+        target_product_ids:
+          - - 6
+            - 0
+            - - "REC: target_product.id"
+    - step: "Create the manual-only deposit type without an interunit account"
+      action: "create"
+      model: "school_deposit_type"
+      save_as: "manual_type"
+      values:
+        name: "Test SDOU Manual Type"
+        code: "EVAL: 'SDOM%d' % env['school_deposit_type'].search_count([])"
+        deposit_account_id: "REC: deposit_account.id"
+        realization_journal_id: "REC: general_journal.id"
+        auto_realize: false
+        source_product_ids:
+          - - 6
+            - 0
+            - - "REC: source_product.id"
+        target_product_ids:
+          - - 6
+            - 0
+            - - "REC: manual_product.id"
+    - step: "Create the customer"
+      action: "create"
+      model: "res.partner"
+      save_as: "customer"
+      values:
+        name: "Test SDOU Customer"
+        is_company: true
+    - step: "Create the customer invoice type"
+      action: "create"
+      model: "customer_invoice_type"
+      save_as: "invoice_type"
+      values:
+        name: "Test SDOU Invoice Type"
+        code: "/"
+        journal_id: "REC: sale_journal.id"
+        receivable_account_id: "REC: receivable_account.id"
+    - step: "Create the deposit invoice dep_inv of operating unit A"
+      action: "create"
+      model: "customer_invoice"
+      save_as: "dep_inv"
+      values:
+        type_id: "REC: invoice_type.id"
+        partner_id: "REC: customer.id"
+        operating_unit_id: "REC: ou_a.id"
+        date: 2026-07-15
+        date_due: 2026-09-01
+        currency_id: "REF: base.USD"
+        pricelist_id: "REF: product.list0"
+        journal_id: "REC: sale_journal.id"
+        receivable_account_id: "REC: receivable_account.id"
+    - step: "Create the line of dep_inv"
+      action: "create"
+      model: "customer_invoice.line"
+      values:
+        customer_invoice_id: "REC: dep_inv.id"
+        product_id: "REC: source_product.id"
+        name: "Line dep_inv"
+        account_id: "REC: deposit_account.id"
+        uom_quantity: 1
+        price_unit: 1000.0
+    - step: "Confirm dep_inv"
+      action: "call"
+      target: "dep_inv"
+      method: "action_confirm"
+      as_user: "base.user_admin"
+      refresh: true
+      asserts:
+        state:
+          type: "value"
+          expected: "confirm"
+    - step: "Approve dep_inv, which opens it"
+      action: "call"
+      target: "dep_inv"
+      method: "action_approve_approval"
+      as_user: "base.user_admin"
+      refresh: true
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+    - step: "Find the deposit credit journal item"
+      action: "search"
+      model: "account.move.line"
+      domain:
+        - ["account_id", "=", "REC: deposit_account.id"]
+        - ["partner_id", "=", "REC: customer.id"]
+        - ["credit", ">", 0.0]
+      save_as: "source_line"
+      expect_count: 1
+
+scenarios:
+  - name: "School Deposit Operating Unit - Same unit realization books a single journal"
+    steps:
+      - step: "Create the customer invoice target_inv of operating unit A"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "target_inv"
+        values:
+          type_id: "REC: invoice_type.id"
+          partner_id: "REC: customer.id"
+          operating_unit_id: "REC: ou_a.id"
+          date: 2026-08-01
+          date_due: 2026-09-01
+          currency_id: "REF: base.USD"
+          pricelist_id: "REF: product.list0"
+          journal_id: "REC: sale_journal.id"
+          receivable_account_id: "REC: receivable_account.id"
+      - step: "Create the line of target_inv"
+        action: "create"
+        model: "customer_invoice.line"
+        values:
+          customer_invoice_id: "REC: target_inv.id"
+          product_id: "REC: target_product.id"
+          name: "Line target_inv"
+          account_id: "REC: income_account.id"
+          uom_quantity: 1
+          price_unit: 600.0
+      - step: "Confirm target_inv"
+        action: "call"
+        target: "target_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+      - step: "Approve target_inv, which opens it"
+        action: "call"
+        target: "target_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+      - step: "Find the realization of target_inv"
+        action: "search"
+        model: "school_deposit_realization"
+        domain:
+          - ["customer_invoice_id", "=", "REC: target_inv.id"]
+        save_as: "realization"
+        expect_count: 1
+      - step: "Assert the realization is done in operating unit A with no extra journal"
+        action: "assert"
+        target: "realization"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          amount_total:
+            type: "value"
+            expected: 600.0
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: ou_a"
+          interunit_move_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+      - step: "Find the single journal of operating unit A"
+        action: "search"
+        model: "account.move"
+        domain:
+          - ["journal_id", "=", "REC: general_journal.id"]
+          - ["operating_unit_id", "=", "REC: ou_a.id"]
+        save_as: "moves_a_1"
+        expect_count: 1
+      - step: "No journal exists in operating unit B"
+        action: "search"
+        model: "account.move"
+        domain:
+          - ["journal_id", "=", "REC: general_journal.id"]
+          - ["operating_unit_id", "=", "REC: ou_b.id"]
+        save_as: "moves_b_0"
+        expect_count: 0
+      - step: "The interunit account is not used"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          - ["account_id", "=", "REC: interunit_account.id"]
+        save_as: "unused"
+        expect_count: 0
+      - step: "Assert the remaining deposit of the source"
+        action: "assert"
+        target: "source_line"
+        refresh: true
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: -400.0
+      - step: "Assert target_inv is paid"
+        action: "assert"
+        target: "target_inv"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          amount_residual:
+            type: "value"
+            expected: 0.0
+
+  - name:
+      "School Deposit Operating Unit - Interunit realization books two reconciled
+      journals"
+    steps:
+      - step: "Create the customer invoice target_inv of operating unit B"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "target_inv"
+        values:
+          type_id: "REC: invoice_type.id"
+          partner_id: "REC: customer.id"
+          operating_unit_id: "REC: ou_b.id"
+          date: 2026-08-01
+          date_due: 2026-09-01
+          currency_id: "REF: base.USD"
+          pricelist_id: "REF: product.list0"
+          journal_id: "REC: sale_journal.id"
+          receivable_account_id: "REC: receivable_account.id"
+      - step: "Create the line of target_inv"
+        action: "create"
+        model: "customer_invoice.line"
+        values:
+          customer_invoice_id: "REC: target_inv.id"
+          product_id: "REC: target_product.id"
+          name: "Line target_inv"
+          account_id: "REC: income_account.id"
+          uom_quantity: 1
+          price_unit: 600.0
+      - step: "Confirm target_inv"
+        action: "call"
+        target: "target_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+      - step: "Approve target_inv, which opens it"
+        action: "call"
+        target: "target_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+      - step: "Find the realization of target_inv"
+        action: "search"
+        model: "school_deposit_realization"
+        domain:
+          - ["customer_invoice_id", "=", "REC: target_inv.id"]
+        save_as: "realization"
+        expect_count: 1
+      - step:
+          "Assert the realization is done in operating unit B with one extra journal"
+        action: "assert"
+        target: "realization"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          amount_total:
+            type: "value"
+            expected: 600.0
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: ou_b"
+          interunit_move_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 1
+      - step: "Find the main journal of operating unit B"
+        action: "search"
+        model: "account.move"
+        domain:
+          - ["journal_id", "=", "REC: general_journal.id"]
+          - ["operating_unit_id", "=", "REC: ou_b.id"]
+        save_as: "moves_b_1"
+        expect_count: 1
+      - step: "Find the additional journal of operating unit A"
+        action: "search"
+        model: "account.move"
+        domain:
+          - ["journal_id", "=", "REC: general_journal.id"]
+          - ["operating_unit_id", "=", "REC: ou_a.id"]
+        save_as: "moves_a_1"
+        expect_count: 1
+      - step: "The interunit account has a debit and a credit line"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          - ["account_id", "=", "REC: interunit_account.id"]
+        save_as: "ix"
+        expect_count: 2
+      - step: "The interunit account balance is zero"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          - ["account_id", "=", "REC: interunit_account.id"]
+          - ["amount_residual", "!=", 0.0]
+        save_as: "ix_open"
+        expect_count: 0
+      - step: "Assert the remaining deposit of the source"
+        action: "assert"
+        target: "source_line"
+        refresh: true
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: -400.0
+      - step: "Assert target_inv is paid"
+        action: "assert"
+        target: "target_inv"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          amount_residual:
+            type: "value"
+            expected: 0.0
+
+  - name:
+      "School Deposit Operating Unit - Cancelling an interunit realization deletes both
+      journals"
+    steps:
+      - step: "Create the customer invoice target_inv of operating unit B"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "target_inv"
+        values:
+          type_id: "REC: invoice_type.id"
+          partner_id: "REC: customer.id"
+          operating_unit_id: "REC: ou_b.id"
+          date: 2026-08-01
+          date_due: 2026-09-01
+          currency_id: "REF: base.USD"
+          pricelist_id: "REF: product.list0"
+          journal_id: "REC: sale_journal.id"
+          receivable_account_id: "REC: receivable_account.id"
+      - step: "Create the line of target_inv"
+        action: "create"
+        model: "customer_invoice.line"
+        values:
+          customer_invoice_id: "REC: target_inv.id"
+          product_id: "REC: target_product.id"
+          name: "Line target_inv"
+          account_id: "REC: income_account.id"
+          uom_quantity: 1
+          price_unit: 600.0
+      - step: "Confirm target_inv"
+        action: "call"
+        target: "target_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+      - step: "Approve target_inv, which opens it"
+        action: "call"
+        target: "target_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+      - step: "Find the realization of target_inv"
+        action: "search"
+        model: "school_deposit_realization"
+        domain:
+          - ["customer_invoice_id", "=", "REC: target_inv.id"]
+        save_as: "realization"
+        expect_count: 1
+      - step: "Assert the interunit realization is done"
+        action: "assert"
+        target: "realization"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          interunit_move_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 1
+      - step: "Create the cancellation reason"
+        action: "create"
+        model: "base.cancel_reason"
+        save_as: "cancel_reason"
+        values:
+          name: "SDOU Cancel Reason"
+          code: "EVAL: 'SDOUCR%d' % env['base.cancel_reason'].search_count([])"
+      - step: "Cancel the done realization via the wizard"
+        action: "wizard"
+        model: "base.select_cancel_reason"
+        target: "realization"
+        as_user: "base.user_admin"
+        values:
+          cancel_reason_id: "REC: cancel_reason.id"
+        method: "action_confirm"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+      - step: "Assert both journals are gone from the realization"
+        action: "assert"
+        target: "realization"
+        refresh: true
+        asserts:
+          move_id:
+            type: "value"
+            operator: "is_falsy"
+          interunit_move_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+      - step: "No journal is left in operating unit A"
+        action: "search"
+        model: "account.move"
+        domain:
+          - ["journal_id", "=", "REC: general_journal.id"]
+        save_as: "left_moves"
+        expect_count: 0
+      - step: "No line is left on the interunit account"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          - ["account_id", "=", "REC: interunit_account.id"]
+        save_as: "ix_left"
+        expect_count: 0
+      - step: "Find the deposit credit journal item again"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          - ["account_id", "=", "REC: deposit_account.id"]
+          - ["partner_id", "=", "REC: customer.id"]
+          - ["credit", ">", 0.0]
+        save_as: "source_line_again"
+        expect_count: 1
+      - step: "Assert the deposit of the source is restored"
+        action: "assert"
+        target: "source_line_again"
+        refresh: true
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: -1000.0
+
+  - name:
+      "School Deposit Operating Unit - A user of operating unit A does not see unit B"
+    steps:
+      - step: "Create the customer invoice inv_a of operating unit A"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "inv_a"
+        values:
+          type_id: "REC: invoice_type.id"
+          partner_id: "REC: customer.id"
+          operating_unit_id: "REC: ou_a.id"
+          date: 2026-08-01
+          date_due: 2026-09-01
+          currency_id: "REF: base.USD"
+          pricelist_id: "REF: product.list0"
+          journal_id: "REC: sale_journal.id"
+          receivable_account_id: "REC: receivable_account.id"
+      - step: "Create the customer invoice inv_b of operating unit B"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "inv_b"
+        values:
+          type_id: "REC: invoice_type.id"
+          partner_id: "REC: customer.id"
+          operating_unit_id: "REC: ou_b.id"
+          date: 2026-08-01
+          date_due: 2026-09-01
+          currency_id: "REF: base.USD"
+          pricelist_id: "REF: product.list0"
+          journal_id: "REC: sale_journal.id"
+          receivable_account_id: "REC: receivable_account.id"
+      - step: "Create the user restricted to operating unit A"
+        action: "create"
+        model: "res.users"
+        save_as: "ou_a_user"
+        values:
+          name: "Test SDOU Unit A User"
+          login: "EVAL: 'sdou_a_user_%d' % env['res.users'].search_count([])"
+          groups_id:
+            - - 6
+              - 0
+              - - "REF: base.group_user"
+                - "REF: ssi_school_deposit.school_deposit_realization_viewer_group"
+                - "REF:
+                  ssi_school_deposit_operating_unit.school_deposit_realization_operating_unit_group"
+          assigned_operating_unit_ids:
+            - - 6
+              - 0
+              - - "REC: ou_a.id"
+          default_operating_unit_id: "REC: ou_a.id"
+      - step: "Create the draft realization of operating unit A"
+        action: "create"
+        model: "school_deposit_realization"
+        save_as: "real_a"
+        values:
+          type_id: "REC: deposit_type.id"
+          partner_id: "REC: customer.id"
+          customer_invoice_id: "REC: inv_a.id"
+          journal_id: "REC: general_journal.id"
+          date: 2026-08-10
+          user_id: "REF: base.user_admin"
+      - step: "Create the draft realization of operating unit B"
+        action: "create"
+        model: "school_deposit_realization"
+        save_as: "real_b"
+        values:
+          type_id: "REC: deposit_type.id"
+          partner_id: "REC: customer.id"
+          customer_invoice_id: "REC: inv_b.id"
+          journal_id: "REC: general_journal.id"
+          date: 2026-08-10
+          user_id: "REF: base.user_admin"
+      - step: "The operating unit is derived from the invoice"
+        action: "assert"
+        target: "real_b"
+        asserts:
+          operating_unit_id:
+            type: "m2o"
+            expected: "REC: ou_b"
+      - step: "The user of unit A sees the realization of unit A"
+        action: "search"
+        model: "school_deposit_realization"
+        as_user: "ou_a_user"
+        domain:
+          - ["id", "=", "REC: real_a.id"]
+        save_as: "seen_a"
+        expect_count: 1
+      - step: "The user of unit A does not see the realization of unit B"
+        action: "search"
+        model: "school_deposit_realization"
+        as_user: "ou_a_user"
+        domain:
+          - ["id", "=", "REC: real_b.id"]
+        save_as: "seen_b"
+        expect_count: 0
+
+  - name:
+      "School Deposit Operating Unit - Interunit realization without an interunit
+      account is rejected"
+    steps:
+      - step: "Create the customer invoice target_inv of operating unit B"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "target_inv"
+        values:
+          type_id: "REC: invoice_type.id"
+          partner_id: "REC: customer.id"
+          operating_unit_id: "REC: ou_b.id"
+          date: 2026-08-01
+          date_due: 2026-09-01
+          currency_id: "REF: base.USD"
+          pricelist_id: "REF: product.list0"
+          journal_id: "REC: sale_journal.id"
+          receivable_account_id: "REC: receivable_account.id"
+      - step: "Create the line of target_inv"
+        action: "create"
+        model: "customer_invoice.line"
+        values:
+          customer_invoice_id: "REC: target_inv.id"
+          product_id: "REC: manual_product.id"
+          name: "Line target_inv"
+          account_id: "REC: income_account.id"
+          uom_quantity: 1
+          price_unit: 300.0
+      - step: "Confirm target_inv"
+        action: "call"
+        target: "target_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+      - step: "Approve target_inv, which opens it"
+        action: "call"
+        target: "target_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+      - step: "Create a draft realization of the type without an interunit account"
+        action: "create"
+        model: "school_deposit_realization"
+        save_as: "manual"
+        values:
+          type_id: "REC: manual_type.id"
+          partner_id: "REC: customer.id"
+          customer_invoice_id: "REC: target_inv.id"
+          journal_id: "REC: general_journal.id"
+          date: 2026-08-10
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - source_move_line_id: "REC: source_line.id"
+                account_id: "REC: deposit_account.id"
+                amount: 300.0
+      - step: "Assert the draft realization exists, which flushes pending writes"
+        action: "assert"
+        target: "manual"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+      - step:
+          "Finishing an interunit realization without an interunit account is rejected"
+        action: "call"
+        target: "manual"
+        method: "action_done"
+        expect_error:
+          type: "UserError"
+          message_contains: "Interunit Account"
+
+  - name:
+      "School Deposit Operating Unit - A realization of another unit than its invoice is
+      rejected"
+    steps:
+      - step: "Create the customer invoice target_inv of operating unit B"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "target_inv"
+        values:
+          type_id: "REC: invoice_type.id"
+          partner_id: "REC: customer.id"
+          operating_unit_id: "REC: ou_b.id"
+          date: 2026-08-01
+          date_due: 2026-09-01
+          currency_id: "REF: base.USD"
+          pricelist_id: "REF: product.list0"
+          journal_id: "REC: sale_journal.id"
+          receivable_account_id: "REC: receivable_account.id"
+      - step: "Create the line of target_inv"
+        action: "create"
+        model: "customer_invoice.line"
+        values:
+          customer_invoice_id: "REC: target_inv.id"
+          product_id: "REC: manual_product.id"
+          name: "Line target_inv"
+          account_id: "REC: income_account.id"
+          uom_quantity: 1
+          price_unit: 300.0
+      - step: "Confirm target_inv"
+        action: "call"
+        target: "target_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+      - step: "Approve target_inv, which opens it"
+        action: "call"
+        target: "target_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+      - step: "Create a draft realization of operating unit A for the invoice of unit B"
+        action: "create"
+        model: "school_deposit_realization"
+        save_as: "mismatch"
+        values:
+          type_id: "REC: manual_type.id"
+          partner_id: "REC: customer.id"
+          customer_invoice_id: "REC: target_inv.id"
+          operating_unit_id: "REC: ou_a.id"
+          journal_id: "REC: general_journal.id"
+          date: 2026-08-10
+          user_id: "REF: base.user_admin"
+      - step: "Assert the draft realization exists, which flushes pending writes"
+        action: "assert"
+        target: "mismatch"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+      - step: "Confirming a realization of another unit than its invoice is rejected"
+        action: "call"
+        target: "mismatch"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "differs from the Operating Unit"
+
+  - name:
+      "School Deposit Operating Unit - A forfeit of a deposit of another unit is
+      rejected"
+    steps:
+      - step: "Create a draft forfeit of operating unit B over the deposit of unit A"
+        action: "create"
+        model: "school_deposit_forfeit"
+        save_as: "forfeit"
+        values:
+          type_id: "REC: deposit_type.id"
+          partner_id: "REC: customer.id"
+          operating_unit_id: "REC: ou_b.id"
+          journal_id: "REC: general_journal.id"
+          date: 2026-08-10
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - source_move_line_id: "REC: source_line.id"
+                amount: 1000.0
+      - step: "Assert the draft forfeit exists, which flushes pending writes"
+        action: "assert"
+        target: "forfeit"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+      - step: "Finishing a forfeit over the deposit of another unit is rejected"
+        action: "call"
+        target: "forfeit"
+        method: "action_done"
+        expect_error:
+          type: "UserError"
+          message_contains: "belongs to Operating Unit"
+
+  - name:
+      "School Deposit Operating Unit - A forfeit in the unit of the deposit is booked
+      there"
+    steps:
+      - step: "Create a draft forfeit of operating unit A over the deposit of unit A"
+        action: "create"
+        model: "school_deposit_forfeit"
+        save_as: "forfeit"
+        values:
+          type_id: "REC: deposit_type.id"
+          partner_id: "REC: customer.id"
+          operating_unit_id: "REC: ou_a.id"
+          journal_id: "REC: general_journal.id"
+          date: 2026-08-10
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - source_move_line_id: "REC: source_line.id"
+                amount: 1000.0
+      - step: "Assert the draft forfeit exists, which flushes pending writes"
+        action: "assert"
+        target: "forfeit"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+      - step: "Confirm the forfeit"
+        action: "call"
+        target: "forfeit"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+      - step: "Approve the forfeit, which finishes it"
+        action: "call"
+        target: "forfeit"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+      - step: "Find the journal of operating unit A"
+        action: "search"
+        model: "account.move"
+        domain:
+          - ["journal_id", "=", "REC: general_journal.id"]
+          - ["operating_unit_id", "=", "REC: ou_a.id"]
+        save_as: "moves_a_1"
+        expect_count: 1
+      - step: "Assert the remaining deposit of the source is zero"
+        action: "assert"
+        target: "source_line"
+        refresh: true
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 0.0
