@@ -1,0 +1,563 @@
+# Copyright 2026 OpenSynergy Indonesia
+# Copyright 2026 PT. Simetri Sinergi Indonesia
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+#
+# T-01 (odoo-development-unit-test/test-traps.md): scenarios in one YAML
+# file share a single DB transaction and a top-level `setup:` block is
+# replayed before every scenario. This file therefore holds exactly ONE
+# scenario and no `setup:` block. Fixture codes use the `SFA` prefix so
+# the files can run against the same database without collisions.
+options:
+  auto_refresh: true
+scenarios:
+  - name: "Deposit Fee Waiver - Realization leaves room for the scheduled waiver"
+    steps:
+      - step: "Setup - get account types"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "sfa_rec_type"
+
+      - step: "Setup - get revenue account type"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "sfa_rev_type"
+
+      - step: "Setup - get expense account type"
+        action: "ref"
+        xml_id: "account.data_account_type_expenses"
+        save_as: "sfa_exp_type"
+
+      - step: "Setup - get liability account type"
+        action: "ref"
+        xml_id: "account.data_account_type_current_liabilities"
+        save_as: "sfa_liab_type"
+
+      - step: "Setup - create receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "sfa_receivable_account"
+        values:
+          name: "SFA Receivable"
+          code: "SFARA"
+          user_type_id: "REC: sfa_rec_type.id"
+          reconcile: true
+
+      - step: "Setup - create income account"
+        action: "create"
+        model: "account.account"
+        save_as: "sfa_income_account"
+        values:
+          name: "SFA Income"
+          code: "SFAIA"
+          user_type_id: "REC: sfa_rev_type.id"
+
+      - step: "Setup - create discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "sfa_discount_account"
+        values:
+          name: "SFA Discount"
+          code: "SFADA"
+          user_type_id: "REC: sfa_exp_type.id"
+
+      - step: "Setup - create deposit liability account"
+        action: "create"
+        model: "account.account"
+        save_as: "sfa_deposit_account"
+        values:
+          name: "SFA Deposit Liability"
+          code: "SFADL"
+          user_type_id: "REC: sfa_liab_type.id"
+          reconcile: true
+
+      - step: "Setup - create deduction journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sfa_deduction_journal"
+        values:
+          name: "SFA Deduction Journal"
+          code: "SFADJ"
+          type: "general"
+
+      - step: "Setup - create sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sfa_sale_journal"
+        values:
+          name: "SFA Sale Journal"
+          code: "SFASJ"
+          type: "sale"
+
+      - step: "Setup - create realization journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sfa_general_journal"
+        values:
+          name: "SFA General Journal"
+          code: "SFAGJ"
+          type: "general"
+
+      - step: "Setup - create customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "sfa_ci_type"
+        values:
+          name: "SFA Invoice Type"
+          code: "SFACT"
+          journal_id: "REC: sfa_sale_journal.id"
+          receivable_account_id: "REC: sfa_receivable_account.id"
+
+      - step: "Setup - create grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "sfa_grade_type"
+        values:
+          name: "SFA Grade Type"
+          code: "SFAGT"
+
+      - step: "Setup - create school"
+        action: "create"
+        model: "school"
+        save_as: "sfa_school"
+        values:
+          name: "SFA School"
+          code: "SFASC"
+          grade_type_id: "REC: sfa_grade_type.id"
+
+      - step: "Setup - create academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "sfa_academic_year"
+        values:
+          name: "SFA Academic Year"
+          code: "SFAAY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Setup - create academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "sfa_academic_term"
+        values:
+          name: "SFA Term"
+          code: "SFATM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: sfa_academic_year.id"
+
+      - step: "Setup - create grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "sfa_grade"
+        values:
+          name: "SFA Grade"
+          code: "SFAGR"
+          type_id: "REC: sfa_grade_type.id"
+
+      - step: "Setup - create grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "sfa_grade_class"
+        values:
+          name: "SFA Class"
+          code: "SFACL"
+          school_id: "REC: sfa_school.id"
+          grade_id: "REC: sfa_grade.id"
+
+      - step: "Setup - create student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "sfa_contact"
+        values:
+          name: "SFA Contact"
+
+      - step: "Setup - create student"
+        action: "create"
+        model: "school_student"
+        save_as: "sfa_student"
+        values:
+          name: "SFA Student"
+          code: "SFAST"
+          contact_id: "REC: sfa_contact.id"
+          school_id: "REC: sfa_school.id"
+
+      - step: "Setup - create enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "sfa_enrollment"
+        values:
+          academic_year_id: "REC: sfa_academic_year.id"
+          academic_term_id: "REC: sfa_academic_term.id"
+          school_id: "REC: sfa_school.id"
+          grade_id: "REC: sfa_grade.id"
+          grade_class_id: "REC: sfa_grade_class.id"
+          student_id: "REC: sfa_student.id"
+          currency_id: "REC: company.currency_id.id"
+          receivable_journal_id: "REC: sfa_sale_journal.id"
+          receivable_account_id: "REC: sfa_receivable_account.id"
+          customer_invoice_type_id: "REC: sfa_ci_type.id"
+
+      - step: "Setup - create fee waiver reason"
+        action: "create"
+        model: "school_fee_waiver_reason"
+        save_as: "sfa_reason"
+        values:
+          name: "SFA Reason"
+          code: "SFARS"
+
+      - step: "Setup - create fee waiver type"
+        action: "create"
+        model: "school_fee_waiver_type"
+        save_as: "sfa_type"
+        values:
+          name: "SFA Type"
+          code: "SFATY"
+          deduction_journal_id: "REC: sfa_deduction_journal.id"
+          discount_account_id: "REC: sfa_discount_account.id"
+
+      - step: "Setup - create product Fee Product"
+        action: "create"
+        model: "product.product"
+        save_as: "sfa_fee_product"
+        values:
+          name: "SFA Fee Product"
+          type: "service"
+
+      - step: "Setup - create product Deposit Product"
+        action: "create"
+        model: "product.product"
+        save_as: "sfa_deposit_product"
+        values:
+          name: "SFA Deposit Product"
+          type: "service"
+
+      - step: "Setup - create deposit type"
+        action: "create"
+        model: "school_deposit_type"
+        save_as: "sfa_deposit_type"
+        values:
+          name: "SFA Deposit Type"
+          code: "SFADT"
+          deposit_account_id: "REC: sfa_deposit_account.id"
+          realization_journal_id: "REC: sfa_general_journal.id"
+          source_product_ids:
+            - - 6
+              - 0
+              - - "REC: sfa_deposit_product.id"
+          target_product_ids:
+            - - 6
+              - 0
+              - - "REC: sfa_fee_product.id"
+
+      - step: "Create the payment term Fee Term"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "sfa_term"
+        values:
+          enrollment_id: "REC: sfa_enrollment.id"
+          name: "SFA Fee Term"
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: sfa_fee_product.id"
+                name: "SFA Fee Term line"
+                account_id: "REC: sfa_income_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create the fee waiver, single term, fixed 500000.0"
+        action: "create"
+        model: "school_fee_waiver"
+        save_as: "sfa_waiver"
+        values:
+          type_id: "REC: sfa_type.id"
+          reason_id: "REC: sfa_reason.id"
+          student_id: "REC: sfa_student.id"
+          enrollment_id: "REC: sfa_enrollment.id"
+          coverage: "single_term"
+          payment_term_id: "REC: sfa_term.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - product_id: "REC: sfa_fee_product.id"
+                computation: "fixed"
+                amount_fixed: 500000.0
+
+      - step: "Confirm the fee waiver"
+        action: "call"
+        target: "sfa_waiver"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Force a refresh before reading approve_ok (T-04)"
+        action: "assert"
+        target: "sfa_waiver"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the fee waiver, which opens it"
+        action: "call"
+        target: "sfa_waiver"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Find the schedule line of the term"
+        action: "search"
+        model: "school_fee_waiver_schedule"
+        domain:
+          [
+            ["waiver_id", "=", "REC: sfa_waiver.id"],
+            ["payment_term_id", "=", "REC: sfa_term.id"],
+          ]
+        save_as: "sfa_schedule"
+        limit: 1
+
+      - step: "The schedule line is scheduled with the fixed planned amount"
+        action: "assert"
+        target: "sfa_schedule"
+        asserts:
+          state:
+            type: "value"
+            expected: "scheduled"
+          amount_planned:
+            type: "value"
+            expected: 500000.0
+
+      - step: "Create the invoice of the term term"
+        action: "call"
+        target: "sfa_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+
+      - step: "Get the generated invoice invoice"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "REC: sfa_term.customer_invoice_id.id"]]
+        save_as: "sfa_invoice"
+        expect_count: 1
+
+      - step: "Confirm the invoice invoice"
+        action: "call"
+        target: "sfa_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Force a refresh before reading approve_ok (T-04)"
+        action: "assert"
+        target: "sfa_invoice"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Create the deposit invoice of the same partner"
+        action: "create"
+        model: "customer_invoice"
+        save_as: "sfa_deposit_inv"
+        values:
+          type_id: "REC: sfa_ci_type.id"
+          partner_id: "EVAL: registry['sfa_invoice'].partner_id.id"
+          date: 2026-07-15
+          date_due: 2026-09-01
+          currency_id: "REF: base.USD"
+          pricelist_id: "REF: product.list0"
+          journal_id: "REC: sfa_sale_journal.id"
+          receivable_account_id: "REC: sfa_receivable_account.id"
+
+      - step: "Create the deposit line"
+        action: "create"
+        model: "customer_invoice.line"
+        values:
+          customer_invoice_id: "REC: sfa_deposit_inv.id"
+          product_id: "REC: sfa_deposit_product.id"
+          name: "SFA deposit"
+          account_id: "REC: sfa_deposit_account.id"
+          uom_quantity: 1
+          price_unit: 1000000.0
+
+      - step: "Confirm the deposit invoice"
+        action: "call"
+        target: "sfa_deposit_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Force a refresh before reading approve_ok (T-04)"
+        action: "assert"
+        target: "sfa_deposit_inv"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the invoice deposit_inv"
+        action: "call"
+        target: "sfa_deposit_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Find the deposit credit item of the invoice before the realization"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["account_id", "=", "REC: sfa_deposit_account.id"],
+            ["credit", ">", 0.0],
+            ["move_id", "=", "EVAL: registry['sfa_deposit_inv'].move_id.id"],
+          ]
+        save_as: "sfa_source"
+        expect_count: 1
+
+      - step: "The deposit item has 1000000.0 left before the realization"
+        action: "assert"
+        target: "sfa_source"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: -1000000.0
+
+      - step: "Approve the invoice invoice"
+        action: "call"
+        target: "sfa_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Find the realization of the fee invoice"
+        action: "search"
+        model: "school_deposit_realization"
+        domain: [["customer_invoice_id", "=", "REC: sfa_invoice.id"]]
+        save_as: "sfa_realization"
+        expect_count: 1
+
+      - step: "The realization took only the amount the waiver leaves"
+        action: "assert"
+        target: "sfa_realization"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          amount_total:
+            type: "value"
+            expected: 500000.0
+
+      - step: "The invoice still owes the scheduled waiver amount"
+        action: "assert"
+        target: "sfa_invoice"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 500000.0
+
+      - step: "Find the deposit credit item of the invoice after the realization"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["account_id", "=", "REC: sfa_deposit_account.id"],
+            ["credit", ">", 0.0],
+            ["move_id", "=", "EVAL: registry['sfa_deposit_inv'].move_id.id"],
+          ]
+        save_as: "sfa_source"
+        expect_count: 1
+
+      - step: "The deposit item has 500000.0 left after the realization"
+        action: "assert"
+        target: "sfa_source"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: -500000.0
+
+      - step: "Create the fee waiver deduction (draft)"
+        action: "create"
+        model: "school_fee_waiver_deduction"
+        save_as: "sfa_deduction"
+        values:
+          waiver_id: "REC: sfa_waiver.id"
+          journal_id: "REC: sfa_deduction_journal.id"
+          receivable_account_id: "REC: sfa_receivable_account.id"
+          date: 2026-08-26
+
+      - step: "Add the deduction line on the discount account"
+        action: "create"
+        model: "school_fee_waiver_deduction_line"
+        save_as: "sfa_deduction_line"
+        values:
+          deduction_id: "REC: sfa_deduction.id"
+          schedule_id: "REC: sfa_schedule.id"
+          account_id: "REC: sfa_discount_account.id"
+          amount: 500000.0
+
+      - step: "Add the allocation to the invoice"
+        action: "create"
+        model: "school_fee_waiver_deduction_allocation"
+        save_as: "sfa_allocation"
+        values:
+          deduction_id: "REC: sfa_deduction.id"
+          customer_invoice_id: "REC: sfa_invoice.id"
+          amount: 500000.0
+
+      - step: "Confirm the deduction"
+        action: "call"
+        target: "sfa_deduction"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Force a refresh before reading approve_ok (T-04)"
+        action: "assert"
+        target: "sfa_deduction"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the deduction, which finishes it"
+        action: "call"
+        target: "sfa_deduction"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "The invoice is fully settled after the deduction"
+        action: "assert"
+        target: "sfa_invoice"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 0.0
+
+      - step: "Find the deposit credit item of the invoice after the deduction"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["account_id", "=", "REC: sfa_deposit_account.id"],
+            ["credit", ">", 0.0],
+            ["move_id", "=", "EVAL: registry['sfa_deposit_inv'].move_id.id"],
+          ]
+        save_as: "sfa_source"
+        expect_count: 1
+
+      - step: "The deposit item has 500000.0 left after the deduction"
+        action: "assert"
+        target: "sfa_source"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: -500000.0

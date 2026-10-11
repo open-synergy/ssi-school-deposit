@@ -1,0 +1,446 @@
+# Copyright 2026 OpenSynergy Indonesia
+# Copyright 2026 PT. Simetri Sinergi Indonesia
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+#
+# Single scenario, no `setup:` block (T-01). The fixture mirrors the
+# deposit admission scenario with the codes renamed to the SFCA family.
+scenarios:
+  - name:
+      "Deposit Fee Waiver - Admission realization leaves room for the scheduled waiver"
+    steps:
+      - step: "Setup - get sale journal"
+        action: "search"
+        model: "account.journal"
+        domain: [["type", "=", "sale"]]
+        save_as: "ci_journal"
+        limit: 1
+
+      - step: "Setup - create receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "ci_account"
+        values:
+          name: "SFCA Receivable"
+          code: "SFCAR"
+          user_type_id: "REF: account.data_account_type_receivable"
+          reconcile: true
+
+      - step: "Setup - create income account"
+        action: "create"
+        model: "account.account"
+        save_as: "account"
+        values:
+          name: "SFCA Income"
+          code: "SFCAI"
+          user_type_id: "REF: account.data_account_type_revenue"
+
+      - step: "Setup - create deposit account"
+        action: "create"
+        model: "account.account"
+        save_as: "deposit_account"
+        values:
+          name: "SFCA Deposit Liability"
+          code: "SFCAD"
+          user_type_id: "REF: account.data_account_type_current_liabilities"
+          reconcile: true
+
+      - step: "Setup - create general journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "general_journal"
+        values:
+          name: "SFCA General"
+          code: "SFCAG"
+          type: "general"
+
+      - step: "Setup - create customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "ci_type"
+        values:
+          name: "SFCA Invoice Type"
+          code: "SFCA"
+          journal_id: "REC: ci_journal.id"
+          receivable_account_id: "REC: ci_account.id"
+
+      - step: "Setup - create deposit product"
+        action: "create"
+        model: "product.product"
+        save_as: "deposit_product"
+        values:
+          name: "SFCA Deposit Product"
+          type: "service"
+
+      - step: "Setup - create fee product"
+        action: "create"
+        model: "product.product"
+        save_as: "product"
+        values:
+          name: "SFCA Fee Product"
+          type: "service"
+          list_price: 600000.0
+
+      - step: "Setup - create pricelist"
+        action: "create"
+        model: "product.pricelist"
+        save_as: "pricelist"
+        values:
+          name: "SFCA Pricelist"
+          currency_id: "REC: company.currency_id.id"
+
+      - step: "Setup - create deposit type"
+        action: "create"
+        model: "school_deposit_type"
+        save_as: "deposit_type"
+        values:
+          name: "SFCA Deposit Type"
+          code: "SFCATA"
+          deposit_account_id: "REC: deposit_account.id"
+          realization_journal_id: "REC: general_journal.id"
+          source_product_ids:
+            - - 6
+              - 0
+              - - "REC: deposit_product.id"
+          target_product_ids:
+            - - 6
+              - 0
+              - - "REC: product.id"
+
+      - step: "Setup - create grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "grade_type"
+        values:
+          name: "Grade Type SFCA"
+          code: "GTSFCA"
+          sequence: 10
+
+      - step: "Setup - create academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "academic_year"
+        values:
+          name: "2024/2025 SFCA"
+          code: "AYSFCA"
+          date_start: "2024-07-01"
+          date_end: "2025-06-30"
+
+      - step: "Setup - create academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "academic_term"
+        values:
+          name: "Semester SFCA"
+          code: "SMSFCA"
+          date_start: "2024-07-01"
+          date_end: "2025-06-30"
+          year_id: "REC: academic_year.id"
+          enrollment_state: "open"
+
+      - step: "Setup - create school"
+        action: "create"
+        model: "school"
+        save_as: "school"
+        values:
+          name: "School SFCA"
+          code: "SCHSFCA"
+          grade_type_id: "REC: grade_type.id"
+
+      - step: "Setup - create grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "grade"
+        values:
+          name: "Grade SFCA"
+          code: "GSFCA"
+          sequence: 10
+          type_id: "REC: grade_type.id"
+
+      - step: "Setup - create student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "contact"
+        values:
+          name: "Student Contact SFCA"
+
+      - step: "Setup - create payment template"
+        action: "create"
+        model: "school_admission_payment_template"
+        save_as: "payment_template"
+        values:
+          customer_invoice_type_id: "REC: ci_type.id"
+          name: "Payment Template SFCA"
+          code: "SFCAPT"
+          school_id: "REC: school.id"
+          grade_id: "REC: grade.id"
+          academic_term_id: "REC: academic_term.id"
+          term_ids:
+            - - 0
+              - 0
+              - name: "Deposit Term SFCA"
+                sequence: 10
+                detail_ids:
+                  - - 0
+                    - 0
+                    - product_id: "REC: deposit_product.id"
+                      name: "Deposit Term line SFCA"
+                      account_id: "REC: deposit_account.id"
+                      uom_quantity: 1.0
+                      uom_id: "REF: uom.product_uom_unit"
+                      price_unit: 1000000.0
+            - - 0
+              - 0
+              - name: "Fee Term SFCA"
+                sequence: 20
+                detail_ids:
+                  - - 0
+                    - 0
+                    - product_id: "REC: product.id"
+                      name: "Fee Term line SFCA"
+                      account_id: "REC: account.id"
+                      uom_quantity: 1.0
+                      uom_id: "REF: uom.product_uom_unit"
+                      price_unit: 600000.0
+
+      - step: "Create admission"
+        action: "create"
+        model: "school_admission"
+        save_as: "admission"
+        values:
+          user_id: "REF: base.user_admin"
+          customer_invoice_type_id: "REC: ci_type.id"
+          receivable_account_id: "REC: ci_account.id"
+          date: "2024-07-01"
+          academic_year_id: "REC: academic_year.id"
+          academic_term_id: "REC: academic_term.id"
+          school_id: "REC: school.id"
+          grade_id: "REC: grade.id"
+          student_id: "REC: contact.id"
+          payment_template_id: "REC: payment_template.id"
+          pricelist_id: "REC: pricelist.id"
+          currency_id: "REC: company.currency_id.id"
+          receivable_journal_id: "REC: ci_journal.id"
+
+      - step: "Confirm admission"
+        action: "call"
+        target: "admission"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Compute payment"
+        action: "call"
+        target: "admission"
+        method: "action_compute_payment"
+        as_user: "base.user_admin"
+
+      - step: "Assert admission is confirm before approve (forces refresh, T-04)"
+        action: "assert"
+        target: "admission"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve admission"
+        action: "call"
+        target: "admission"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Get the deposit_term"
+        action: "search"
+        model: "school_admission_payment_term"
+        domain:
+          - ["admission_id", "=", "REC: admission.id"]
+          - ["name", "=", "Deposit Term SFCA"]
+        save_as: "deposit_term"
+        expect_count: 1
+
+      - step: "Create the invoice of the deposit_term"
+        action: "call"
+        target: "deposit_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+
+      - step: "Get the generated deposit_inv"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "EVAL: registry['deposit_term'].customer_invoice_id.id"]]
+        save_as: "deposit_inv"
+        expect_count: 1
+
+      - step: "Get the fee_term"
+        action: "search"
+        model: "school_admission_payment_term"
+        domain:
+          - ["admission_id", "=", "REC: admission.id"]
+          - ["name", "=", "Fee Term SFCA"]
+        save_as: "fee_term"
+        expect_count: 1
+
+      - step: "Create the fee waiver type"
+        action: "create"
+        model: "school_fee_waiver_type"
+        save_as: "waiver_type"
+        values:
+          name: "SFCA Type"
+          code: "SFCATY"
+
+      - step: "Create the fee waiver reason"
+        action: "create"
+        model: "school_fee_waiver_reason"
+        save_as: "waiver_reason"
+        values:
+          name: "SFCA Reason"
+          code: "SFCARS"
+
+      - step: "Create the admission sourced fee waiver, fixed 200000"
+        action: "create"
+        model: "school_fee_waiver"
+        save_as: "waiver"
+        values:
+          type_id: "REC: waiver_type.id"
+          reason_id: "REC: waiver_reason.id"
+          student_id: "EVAL: registry['admission'].school_student_id.id"
+          source_type: "admission"
+          admission_id: "REC: admission.id"
+          coverage: "single_term"
+          admission_payment_term_id: "REC: fee_term.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - product_id: "REC: product.id"
+                computation: "fixed"
+                amount_fixed: 200000.0
+
+      - step: "Confirm the fee waiver"
+        action: "call"
+        target: "waiver"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Force a refresh before reading approve_ok (T-04)"
+        action: "assert"
+        target: "waiver"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the fee waiver, which opens it"
+        action: "call"
+        target: "waiver"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Find the schedule line of the fee term"
+        action: "search"
+        model: "school_fee_waiver_schedule"
+        domain:
+          [
+            ["waiver_id", "=", "REC: waiver.id"],
+            ["admission_payment_term_id", "=", "REC: fee_term.id"],
+          ]
+        save_as: "schedule"
+        limit: 1
+
+      - step: "The schedule line is scheduled with the fixed planned amount"
+        action: "assert"
+        target: "schedule"
+        asserts:
+          state:
+            type: "value"
+            expected: "scheduled"
+          amount_planned:
+            type: "value"
+            expected: 200000.0
+
+      - step: "Create the invoice of the fee_term"
+        action: "call"
+        target: "fee_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+
+      - step: "Get the generated fee_inv"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "EVAL: registry['fee_term'].customer_invoice_id.id"]]
+        save_as: "fee_inv"
+        expect_count: 1
+
+      - step: "Confirm the deposit invoice"
+        action: "call"
+        target: "deposit_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the deposit invoice"
+        action: "call"
+        target: "deposit_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Confirm the fee invoice, which realizes the deposit"
+        action: "call"
+        target: "fee_inv"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the fee invoice, which realizes the deposit"
+        action: "call"
+        target: "fee_inv"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        refresh: true
+
+      - step: "Find the realization of the fee invoice"
+        action: "search"
+        model: "school_deposit_realization"
+        domain: [["customer_invoice_id", "=", "REC: fee_inv.id"]]
+        save_as: "realization"
+        expect_count: 1
+
+      - step: "The realization took only the amount the waiver leaves"
+        action: "assert"
+        target: "realization"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          amount_total:
+            type: "value"
+            expected: 400000.0
+
+      - step: "The fee invoice still owes the scheduled waiver amount"
+        action: "assert"
+        target: "fee_inv"
+        refresh: true
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 200000.0

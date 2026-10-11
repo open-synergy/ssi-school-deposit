@@ -1,0 +1,435 @@
+# Copyright 2026 OpenSynergy Indonesia
+# Copyright 2026 PT. Simetri Sinergi Indonesia
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+#
+# T-01 (odoo-development-unit-test/test-traps.md): scenarios in one YAML
+# file share a single DB transaction and a top-level `setup:` block is
+# replayed before every scenario. This file therefore holds exactly ONE
+# scenario and no `setup:` block. Fixture codes use the `SFD` prefix so
+# the files can run against the same database without collisions.
+options:
+  auto_refresh: true
+scenarios:
+  - name: "Deposit Fee Waiver - Deferred recognition is rejected on a deposit line"
+    steps:
+      - step: "Setup - get account types"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "sfd_rec_type"
+
+      - step: "Setup - get revenue account type"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "sfd_rev_type"
+
+      - step: "Setup - get expense account type"
+        action: "ref"
+        xml_id: "account.data_account_type_expenses"
+        save_as: "sfd_exp_type"
+
+      - step: "Setup - get liability account type"
+        action: "ref"
+        xml_id: "account.data_account_type_current_liabilities"
+        save_as: "sfd_liab_type"
+
+      - step: "Setup - create receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "sfd_receivable_account"
+        values:
+          name: "SFD Receivable"
+          code: "SFDRA"
+          user_type_id: "REC: sfd_rec_type.id"
+          reconcile: true
+
+      - step: "Setup - create income account"
+        action: "create"
+        model: "account.account"
+        save_as: "sfd_income_account"
+        values:
+          name: "SFD Income"
+          code: "SFDIA"
+          user_type_id: "REC: sfd_rev_type.id"
+
+      - step: "Setup - create discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "sfd_discount_account"
+        values:
+          name: "SFD Discount"
+          code: "SFDDA"
+          user_type_id: "REC: sfd_exp_type.id"
+
+      - step: "Setup - create deposit liability account"
+        action: "create"
+        model: "account.account"
+        save_as: "sfd_deposit_account"
+        values:
+          name: "SFD Deposit Liability"
+          code: "SFDDL"
+          user_type_id: "REC: sfd_liab_type.id"
+          reconcile: true
+
+      - step: "Setup - create deferred discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "sfd_deferred_account"
+        values:
+          name: "SFD Deferred Discount"
+          code: "SFDDF"
+          user_type_id: "REC: sfd_exp_type.id"
+
+      - step: "Setup - create deduction journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sfd_deduction_journal"
+        values:
+          name: "SFD Deduction Journal"
+          code: "SFDDJ"
+          type: "general"
+
+      - step: "Setup - create sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sfd_sale_journal"
+        values:
+          name: "SFD Sale Journal"
+          code: "SFDSJ"
+          type: "sale"
+
+      - step: "Setup - create realization journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sfd_general_journal"
+        values:
+          name: "SFD General Journal"
+          code: "SFDGJ"
+          type: "general"
+
+      - step: "Setup - create customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "sfd_ci_type"
+        values:
+          name: "SFD Invoice Type"
+          code: "SFDCT"
+          journal_id: "REC: sfd_sale_journal.id"
+          receivable_account_id: "REC: sfd_receivable_account.id"
+
+      - step: "Setup - create grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "sfd_grade_type"
+        values:
+          name: "SFD Grade Type"
+          code: "SFDGT"
+
+      - step: "Setup - create school"
+        action: "create"
+        model: "school"
+        save_as: "sfd_school"
+        values:
+          name: "SFD School"
+          code: "SFDSC"
+          grade_type_id: "REC: sfd_grade_type.id"
+
+      - step: "Setup - create academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "sfd_academic_year"
+        values:
+          name: "SFD Academic Year"
+          code: "SFDAY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Setup - create academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "sfd_academic_term"
+        values:
+          name: "SFD Term"
+          code: "SFDTM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: sfd_academic_year.id"
+
+      - step: "Setup - create grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "sfd_grade"
+        values:
+          name: "SFD Grade"
+          code: "SFDGR"
+          type_id: "REC: sfd_grade_type.id"
+
+      - step: "Setup - create grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "sfd_grade_class"
+        values:
+          name: "SFD Class"
+          code: "SFDCL"
+          school_id: "REC: sfd_school.id"
+          grade_id: "REC: sfd_grade.id"
+
+      - step: "Setup - create student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "sfd_contact"
+        values:
+          name: "SFD Contact"
+
+      - step: "Setup - create student"
+        action: "create"
+        model: "school_student"
+        save_as: "sfd_student"
+        values:
+          name: "SFD Student"
+          code: "SFDST"
+          contact_id: "REC: sfd_contact.id"
+          school_id: "REC: sfd_school.id"
+
+      - step: "Setup - create enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "sfd_enrollment"
+        values:
+          academic_year_id: "REC: sfd_academic_year.id"
+          academic_term_id: "REC: sfd_academic_term.id"
+          school_id: "REC: sfd_school.id"
+          grade_id: "REC: sfd_grade.id"
+          grade_class_id: "REC: sfd_grade_class.id"
+          student_id: "REC: sfd_student.id"
+          currency_id: "REC: company.currency_id.id"
+          receivable_journal_id: "REC: sfd_sale_journal.id"
+          receivable_account_id: "REC: sfd_receivable_account.id"
+          customer_invoice_type_id: "REC: sfd_ci_type.id"
+          revenue_recognition: true
+          recognition_journal_id: "REC: sfd_sale_journal.id"
+
+      - step: "Setup - create fee waiver reason"
+        action: "create"
+        model: "school_fee_waiver_reason"
+        save_as: "sfd_reason"
+        values:
+          name: "SFD Reason"
+          code: "SFDRS"
+
+      - step: "Setup - create fee waiver type"
+        action: "create"
+        model: "school_fee_waiver_type"
+        save_as: "sfd_type"
+        values:
+          name: "SFD Type"
+          code: "SFDTY"
+          deduction_journal_id: "REC: sfd_deduction_journal.id"
+          discount_account_id: "REC: sfd_discount_account.id"
+          deferred_discount_account_id: "REC: sfd_deferred_account.id"
+
+      - step: "Setup - create product Deposit Product"
+        action: "create"
+        model: "product.product"
+        save_as: "sfd_deposit_product"
+        values:
+          name: "SFD Deposit Product"
+          type: "service"
+
+      - step: "Setup - create product Fee Product"
+        action: "create"
+        model: "product.product"
+        save_as: "sfd_fee_product"
+        values:
+          name: "SFD Fee Product"
+          type: "service"
+
+      - step: "Setup - create deposit type"
+        action: "create"
+        model: "school_deposit_type"
+        save_as: "sfd_deposit_type"
+        values:
+          name: "SFD Deposit Type"
+          code: "SFDDT"
+          deposit_account_id: "REC: sfd_deposit_account.id"
+          realization_journal_id: "REC: sfd_general_journal.id"
+          source_product_ids:
+            - - 6
+              - 0
+              - - "REC: sfd_deposit_product.id"
+          target_product_ids:
+            - - 6
+              - 0
+              - - "REC: sfd_fee_product.id"
+
+      - step: "Create the payment term Deposit Term"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "sfd_term"
+        values:
+          enrollment_id: "REC: sfd_enrollment.id"
+          name: "SFD Deposit Term"
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: sfd_deposit_product.id"
+                name: "SFD Deposit Term line"
+                account_id: "REC: sfd_deposit_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create the fee waiver, single term, fixed 300000.0"
+        action: "create"
+        model: "school_fee_waiver"
+        save_as: "sfd_waiver"
+        values:
+          type_id: "REC: sfd_type.id"
+          reason_id: "REC: sfd_reason.id"
+          student_id: "REC: sfd_student.id"
+          enrollment_id: "REC: sfd_enrollment.id"
+          coverage: "single_term"
+          payment_term_id: "REC: sfd_term.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - product_id: "REC: sfd_deposit_product.id"
+                computation: "fixed"
+                amount_fixed: 300000.0
+
+      - step: "Confirm the fee waiver"
+        action: "call"
+        target: "sfd_waiver"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Force a refresh before reading approve_ok (T-04)"
+        action: "assert"
+        target: "sfd_waiver"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the fee waiver, which opens it"
+        action: "call"
+        target: "sfd_waiver"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Find the schedule line of the term"
+        action: "search"
+        model: "school_fee_waiver_schedule"
+        domain:
+          [
+            ["waiver_id", "=", "REC: sfd_waiver.id"],
+            ["payment_term_id", "=", "REC: sfd_term.id"],
+          ]
+        save_as: "sfd_schedule"
+        limit: 1
+
+      - step: "The schedule line is scheduled with the fixed planned amount"
+        action: "assert"
+        target: "sfd_schedule"
+        asserts:
+          state:
+            type: "value"
+            expected: "scheduled"
+          amount_planned:
+            type: "value"
+            expected: 300000.0
+
+      - step: "Create the invoice of the term term"
+        action: "call"
+        target: "sfd_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+
+      - step: "Get the generated invoice invoice"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "REC: sfd_term.customer_invoice_id.id"]]
+        save_as: "sfd_invoice"
+        expect_count: 1
+
+      - step: "Confirm the invoice invoice"
+        action: "call"
+        target: "sfd_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Force a refresh before reading approve_ok (T-04)"
+        action: "assert"
+        target: "sfd_invoice"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the invoice invoice"
+        action: "call"
+        target: "sfd_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create the fee waiver deduction (draft)"
+        action: "create"
+        model: "school_fee_waiver_deduction"
+        save_as: "sfd_deduction"
+        values:
+          waiver_id: "REC: sfd_waiver.id"
+          journal_id: "REC: sfd_deduction_journal.id"
+          receivable_account_id: "REC: sfd_receivable_account.id"
+          date: 2026-08-26
+
+      - step: "Add the deduction line on the deposit account"
+        action: "create"
+        model: "school_fee_waiver_deduction_line"
+        save_as: "sfd_deduction_line"
+        values:
+          deduction_id: "REC: sfd_deduction.id"
+          schedule_id: "REC: sfd_schedule.id"
+          account_id: "REC: sfd_deposit_account.id"
+          amount: 300000.0
+
+      - step: "Add the allocation to the invoice"
+        action: "create"
+        model: "school_fee_waiver_deduction_allocation"
+        save_as: "sfd_allocation"
+        values:
+          deduction_id: "REC: sfd_deduction.id"
+          customer_invoice_id: "REC: sfd_invoice.id"
+          amount: 300000.0
+
+      - step: "Confirm the deduction"
+        action: "call"
+        target: "sfd_deduction"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Force a refresh before reading approve_ok (T-04)"
+        action: "assert"
+        target: "sfd_deduction"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "A deposit line under the enrollment recognition method is rejected"
+        action: "call"
+        target: "sfd_deduction"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "enrollment recognition method"
