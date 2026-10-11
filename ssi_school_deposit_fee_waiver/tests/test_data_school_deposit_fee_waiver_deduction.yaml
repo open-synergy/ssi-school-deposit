@@ -1,0 +1,543 @@
+# Copyright 2026 OpenSynergy Indonesia
+# Copyright 2026 PT. Simetri Sinergi Indonesia
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+#
+# T-01 (odoo-development-unit-test/test-traps.md): scenarios in one YAML
+# file share a single DB transaction and a top-level `setup:` block is
+# replayed before every scenario. This file therefore holds exactly ONE
+# scenario and no `setup:` block. Fixture codes use the `SFB` prefix so
+# the files can run against the same database without collisions.
+options:
+  auto_refresh: true
+scenarios:
+  - name: "Deposit Fee Waiver - Deduction on a deposit item reduces the deposit"
+    steps:
+      - step: "Setup - get account types"
+        action: "ref"
+        xml_id: "account.data_account_type_receivable"
+        save_as: "sfb_rec_type"
+
+      - step: "Setup - get revenue account type"
+        action: "ref"
+        xml_id: "account.data_account_type_revenue"
+        save_as: "sfb_rev_type"
+
+      - step: "Setup - get expense account type"
+        action: "ref"
+        xml_id: "account.data_account_type_expenses"
+        save_as: "sfb_exp_type"
+
+      - step: "Setup - get liability account type"
+        action: "ref"
+        xml_id: "account.data_account_type_current_liabilities"
+        save_as: "sfb_liab_type"
+
+      - step: "Setup - create receivable account"
+        action: "create"
+        model: "account.account"
+        save_as: "sfb_receivable_account"
+        values:
+          name: "SFB Receivable"
+          code: "SFBRA"
+          user_type_id: "REC: sfb_rec_type.id"
+          reconcile: true
+
+      - step: "Setup - create income account"
+        action: "create"
+        model: "account.account"
+        save_as: "sfb_income_account"
+        values:
+          name: "SFB Income"
+          code: "SFBIA"
+          user_type_id: "REC: sfb_rev_type.id"
+
+      - step: "Setup - create discount account"
+        action: "create"
+        model: "account.account"
+        save_as: "sfb_discount_account"
+        values:
+          name: "SFB Discount"
+          code: "SFBDA"
+          user_type_id: "REC: sfb_exp_type.id"
+
+      - step: "Setup - create deposit liability account"
+        action: "create"
+        model: "account.account"
+        save_as: "sfb_deposit_account"
+        values:
+          name: "SFB Deposit Liability"
+          code: "SFBDL"
+          user_type_id: "REC: sfb_liab_type.id"
+          reconcile: true
+
+      - step: "Setup - create deduction journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sfb_deduction_journal"
+        values:
+          name: "SFB Deduction Journal"
+          code: "SFBDJ"
+          type: "general"
+
+      - step: "Setup - create sale journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sfb_sale_journal"
+        values:
+          name: "SFB Sale Journal"
+          code: "SFBSJ"
+          type: "sale"
+
+      - step: "Setup - create realization journal"
+        action: "create"
+        model: "account.journal"
+        save_as: "sfb_general_journal"
+        values:
+          name: "SFB General Journal"
+          code: "SFBGJ"
+          type: "general"
+
+      - step: "Setup - create customer invoice type"
+        action: "create"
+        model: "customer_invoice_type"
+        save_as: "sfb_ci_type"
+        values:
+          name: "SFB Invoice Type"
+          code: "SFBCT"
+          journal_id: "REC: sfb_sale_journal.id"
+          receivable_account_id: "REC: sfb_receivable_account.id"
+
+      - step: "Setup - create grade type"
+        action: "create"
+        model: "school_grade_type"
+        save_as: "sfb_grade_type"
+        values:
+          name: "SFB Grade Type"
+          code: "SFBGT"
+
+      - step: "Setup - create school"
+        action: "create"
+        model: "school"
+        save_as: "sfb_school"
+        values:
+          name: "SFB School"
+          code: "SFBSC"
+          grade_type_id: "REC: sfb_grade_type.id"
+
+      - step: "Setup - create academic year"
+        action: "create"
+        model: "school_academic_year"
+        save_as: "sfb_academic_year"
+        values:
+          name: "SFB Academic Year"
+          code: "SFBAY"
+          date_start: 2026-07-01
+          date_end: 2027-06-30
+
+      - step: "Setup - create academic term"
+        action: "create"
+        model: "school_academic_term"
+        save_as: "sfb_academic_term"
+        values:
+          name: "SFB Term"
+          code: "SFBTM"
+          date_start: 2026-07-01
+          date_end: 2026-12-31
+          year_id: "REC: sfb_academic_year.id"
+
+      - step: "Setup - create grade"
+        action: "create"
+        model: "school_grade"
+        save_as: "sfb_grade"
+        values:
+          name: "SFB Grade"
+          code: "SFBGR"
+          type_id: "REC: sfb_grade_type.id"
+
+      - step: "Setup - create grade class"
+        action: "create"
+        model: "school_grade_class"
+        save_as: "sfb_grade_class"
+        values:
+          name: "SFB Class"
+          code: "SFBCL"
+          school_id: "REC: sfb_school.id"
+          grade_id: "REC: sfb_grade.id"
+
+      - step: "Setup - create student contact"
+        action: "create"
+        model: "res.partner"
+        save_as: "sfb_contact"
+        values:
+          name: "SFB Contact"
+
+      - step: "Setup - create student"
+        action: "create"
+        model: "school_student"
+        save_as: "sfb_student"
+        values:
+          name: "SFB Student"
+          code: "SFBST"
+          contact_id: "REC: sfb_contact.id"
+          school_id: "REC: sfb_school.id"
+
+      - step: "Setup - create enrollment"
+        action: "create"
+        model: "school_enrollment"
+        save_as: "sfb_enrollment"
+        values:
+          academic_year_id: "REC: sfb_academic_year.id"
+          academic_term_id: "REC: sfb_academic_term.id"
+          school_id: "REC: sfb_school.id"
+          grade_id: "REC: sfb_grade.id"
+          grade_class_id: "REC: sfb_grade_class.id"
+          student_id: "REC: sfb_student.id"
+          currency_id: "REC: company.currency_id.id"
+          receivable_journal_id: "REC: sfb_sale_journal.id"
+          receivable_account_id: "REC: sfb_receivable_account.id"
+          customer_invoice_type_id: "REC: sfb_ci_type.id"
+
+      - step: "Setup - create fee waiver reason"
+        action: "create"
+        model: "school_fee_waiver_reason"
+        save_as: "sfb_reason"
+        values:
+          name: "SFB Reason"
+          code: "SFBRS"
+
+      - step: "Setup - create fee waiver type"
+        action: "create"
+        model: "school_fee_waiver_type"
+        save_as: "sfb_type"
+        values:
+          name: "SFB Type"
+          code: "SFBTY"
+          deduction_journal_id: "REC: sfb_deduction_journal.id"
+          discount_account_id: "REC: sfb_discount_account.id"
+
+      - step: "Setup - create product Deposit Product"
+        action: "create"
+        model: "product.product"
+        save_as: "sfb_deposit_product"
+        values:
+          name: "SFB Deposit Product"
+          type: "service"
+
+      - step: "Setup - create product Fee Product"
+        action: "create"
+        model: "product.product"
+        save_as: "sfb_fee_product"
+        values:
+          name: "SFB Fee Product"
+          type: "service"
+
+      - step: "Setup - create deposit type"
+        action: "create"
+        model: "school_deposit_type"
+        save_as: "sfb_deposit_type"
+        values:
+          name: "SFB Deposit Type"
+          code: "SFBDT"
+          deposit_account_id: "REC: sfb_deposit_account.id"
+          realization_journal_id: "REC: sfb_general_journal.id"
+          source_product_ids:
+            - - 6
+              - 0
+              - - "REC: sfb_deposit_product.id"
+          target_product_ids:
+            - - 6
+              - 0
+              - - "REC: sfb_fee_product.id"
+
+      - step: "Create the payment term Deposit Term"
+        action: "create"
+        model: "school_enrollment_payment_term"
+        save_as: "sfb_term"
+        values:
+          enrollment_id: "REC: sfb_enrollment.id"
+          name: "SFB Deposit Term"
+          date_invoice: 2026-08-01
+          date_due: 2026-08-15
+          detail_ids:
+            - - 0
+              - 0
+              - product_id: "REC: sfb_deposit_product.id"
+                name: "SFB Deposit Term line"
+                account_id: "REC: sfb_deposit_account.id"
+                uom_quantity: 1.0
+                uom_id: "REF: uom.product_uom_unit"
+                price_unit: 1000000.0
+
+      - step: "Create the fee waiver, single term, fixed 300000.0"
+        action: "create"
+        model: "school_fee_waiver"
+        save_as: "sfb_waiver"
+        values:
+          type_id: "REC: sfb_type.id"
+          reason_id: "REC: sfb_reason.id"
+          student_id: "REC: sfb_student.id"
+          enrollment_id: "REC: sfb_enrollment.id"
+          coverage: "single_term"
+          payment_term_id: "REC: sfb_term.id"
+          user_id: "REF: base.user_admin"
+          line_ids:
+            - - 0
+              - 0
+              - product_id: "REC: sfb_deposit_product.id"
+                computation: "fixed"
+                amount_fixed: 300000.0
+
+      - step: "Confirm the fee waiver"
+        action: "call"
+        target: "sfb_waiver"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Force a refresh before reading approve_ok (T-04)"
+        action: "assert"
+        target: "sfb_waiver"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the fee waiver, which opens it"
+        action: "call"
+        target: "sfb_waiver"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Find the schedule line of the term"
+        action: "search"
+        model: "school_fee_waiver_schedule"
+        domain:
+          [
+            ["waiver_id", "=", "REC: sfb_waiver.id"],
+            ["payment_term_id", "=", "REC: sfb_term.id"],
+          ]
+        save_as: "sfb_schedule"
+        expect_count: 1
+
+      - step: "The schedule line is scheduled with the fixed planned amount"
+        action: "assert"
+        target: "sfb_schedule"
+        asserts:
+          state:
+            type: "value"
+            expected: "scheduled"
+          amount_planned:
+            type: "value"
+            expected: 300000.0
+
+      - step: "Create the invoice of the term term"
+        action: "call"
+        target: "sfb_term"
+        method: "action_create_invoice"
+        as_user: "base.user_admin"
+
+      - step: "Get the generated invoice invoice"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["id", "=", "REC: sfb_term.customer_invoice_id.id"]]
+        save_as: "sfb_invoice"
+        expect_count: 1
+
+      - step: "Confirm the invoice invoice"
+        action: "call"
+        target: "sfb_invoice"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Force a refresh before reading approve_ok (T-04)"
+        action: "assert"
+        target: "sfb_invoice"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the invoice invoice"
+        action: "call"
+        target: "sfb_invoice"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Find the deposit credit item of the invoice before the deduction"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["account_id", "=", "REC: sfb_deposit_account.id"],
+            ["credit", ">", 0.0],
+            ["move_id", "=", "EVAL: registry['sfb_invoice'].move_id.id"],
+          ]
+        save_as: "sfb_source"
+        expect_count: 1
+
+      - step: "The deposit item has 1000000.0 left before the deduction"
+        action: "assert"
+        target: "sfb_source"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: -1000000.0
+
+      - step: "Create the fee waiver deduction (draft)"
+        action: "create"
+        model: "school_fee_waiver_deduction"
+        save_as: "sfb_deduction"
+        values:
+          waiver_id: "REC: sfb_waiver.id"
+          journal_id: "REC: sfb_deduction_journal.id"
+          receivable_account_id: "REC: sfb_receivable_account.id"
+          date: 2026-08-26
+
+      - step: "Add the deduction line on the deposit account"
+        action: "create"
+        model: "school_fee_waiver_deduction_line"
+        save_as: "sfb_deduction_line"
+        values:
+          deduction_id: "REC: sfb_deduction.id"
+          schedule_id: "REC: sfb_schedule.id"
+          account_id: "REC: sfb_deposit_account.id"
+          amount: 300000.0
+
+      - step: "Add the allocation to the invoice"
+        action: "create"
+        model: "school_fee_waiver_deduction_allocation"
+        save_as: "sfb_allocation"
+        values:
+          deduction_id: "REC: sfb_deduction.id"
+          customer_invoice_id: "REC: sfb_invoice.id"
+          amount: 300000.0
+
+      - step: "Confirm the deduction"
+        action: "call"
+        target: "sfb_deduction"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Force a refresh before reading approve_ok (T-04)"
+        action: "assert"
+        target: "sfb_deduction"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve the deduction, which finishes it"
+        action: "call"
+        target: "sfb_deduction"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Find the deposit credit item of the invoice after the deduction"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["account_id", "=", "REC: sfb_deposit_account.id"],
+            ["credit", ">", 0.0],
+            ["move_id", "=", "EVAL: registry['sfb_invoice'].move_id.id"],
+          ]
+        save_as: "sfb_source"
+        expect_count: 1
+
+      - step: "The deposit item has 700000.0 left after the deduction"
+        action: "assert"
+        target: "sfb_source"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: -700000.0
+
+      - step: "The deduction credit settled part of the invoice"
+        action: "assert"
+        target: "sfb_invoice"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: 700000.0
+
+      - step: "Create a forfeit of the remaining deposit"
+        action: "create"
+        model: "school_deposit_forfeit"
+        save_as: "sfb_forfeit"
+        values:
+          type_id: "REC: sfb_deposit_type.id"
+          partner_id: "EVAL: registry['sfb_invoice'].partner_id.id"
+          journal_id: "REC: sfb_general_journal.id"
+          date: 2026-08-30
+          user_id: "REF: base.user_admin"
+
+      - step: "The forfeit takes only the deposit left after the deduction"
+        action: "call"
+        target: "sfb_forfeit"
+        method: "action_compute_line"
+        asserts:
+          amount_total:
+            type: "value"
+            expected: 700000.0
+
+      - step: "Create the cancellation reason"
+        action: "create"
+        model: "base.cancel_reason"
+        save_as: "sfb_cancel_reason"
+        values:
+          name: "SFB Cancel Reason"
+          code: "SFBCR"
+          global_use: true
+
+      - step: "Cancel the deduction via the wizard"
+        action: "wizard"
+        model: "base.select_cancel_reason"
+        target: "sfb_deduction"
+        as_user: "base.user_admin"
+        values:
+          cancel_reason_id: "REC: sfb_cancel_reason"
+        method: "action_confirm"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Find the deposit credit item of the invoice after the cancellation"
+        action: "search"
+        model: "account.move.line"
+        domain:
+          [
+            ["account_id", "=", "REC: sfb_deposit_account.id"],
+            ["credit", ">", 0.0],
+            ["move_id", "=", "EVAL: registry['sfb_invoice'].move_id.id"],
+          ]
+        save_as: "sfb_source"
+        expect_count: 1
+
+      - step: "The deposit item has 1000000.0 left after the cancellation"
+        action: "assert"
+        target: "sfb_source"
+        asserts:
+          amount_residual:
+            type: "value"
+            expected: -1000000.0
+
+      - step: "The forfeit takes the whole deposit again"
+        action: "call"
+        target: "sfb_forfeit"
+        method: "action_compute_line"
+        asserts:
+          amount_total:
+            type: "value"
+            expected: 1000000.0

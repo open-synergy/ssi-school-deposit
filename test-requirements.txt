@@ -9,3 +9,6 @@ odoo14-addon-ssi-decorator
 odoo14-addon-ssi-transaction-confirm-mixin
 odoo14-addon-ssi-transaction-done-mixin
 odoo14-addon-ssi-transaction-cancel-mixin
+odoo14-addon-ssi-school-fee-waiver
+odoo14-addon-ssi-school-fee-waiver-deduction>=14.0.1.3.0.dev0
+odoo14-addon-ssi-school-fee-waiver-admission
