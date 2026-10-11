@@ -27,9 +27,22 @@ class CustomerInvoice(models.Model):
     def _90_realize_school_deposit(self):
         """Realize every auto-realize deposit type payable here.
 
+        Runs only the first time the invoice is opened: it returns
+        early when the invoice already has a realization in any
+        state, cancelled ones included. Cancelling a done realization
+        reopens the invoice through ``base.automation``, and realizing
+        again in the middle of that cancellation would settle the
+        invoice anew. Use the Reprocess wizard to realize it again.
+
         :return: nothing
         """
         self.ensure_one()
+        if (
+            self.env["school_deposit_realization"]
+            .sudo()
+            .search_count([("customer_invoice_id", "=", self.id)])
+        ):
+            return True
         types = self.env["school_deposit_type"].search([("auto_realize", "=", True)])
         self._realize_school_deposit(types)
 
