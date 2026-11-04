@@ -77,7 +77,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__message_needaction
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__message_needaction
 msgid "Action Needed"
-msgstr "Tindakan Diperlukan"
+msgstr "Perlu Tindakan"
 
 #. module: ssi_school_deposit
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__active
@@ -1022,7 +1022,7 @@ msgstr "Penanggung Jawab"
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__activity_user_id
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__activity_user_id
 msgid "Responsible User"
-msgstr "Pengguna yang Bertanggung Jawab"
+msgstr "Pengguna Penanggung Jawab"
 
 #. module: ssi_school_deposit
 #: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__restart_approval_ok
@@ -1114,7 +1114,7 @@ msgstr "Jenis Deposit Sekolah"
 #. module: ssi_school_deposit
 #: model:ir.model,name:ssi_school_deposit.model_school_enrollment
 msgid "School Enrollment"
-msgstr "Pendaftaran Sekolah"
+msgstr "Pendaftaran Siswa"
 
 #. module: ssi_school_deposit
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__source_move_line_id
@@ -1202,7 +1202,7 @@ msgstr "Jenis"
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__message_unread
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__message_unread
 msgid "Unread Messages"
-msgstr "Pesan Belum Dibaca"
+msgstr "Pesan yang Belum Dibaca"
 
 #. module: ssi_school_deposit
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__message_unread_counter
