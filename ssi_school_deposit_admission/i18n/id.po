@@ -1,0 +1,47 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ssi_school_deposit_admission
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-11-03 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: id\n"
+
+#. module: ssi_school_deposit_admission
+#: model:ir.model.fields,field_description:ssi_school_deposit_admission.field_school_admission__amount_deposit_realized
+msgid "Deposit Realized"
+msgstr "Deposit Terealisasi"
+
+#. module: ssi_school_deposit_admission
+#: model:ir.model.fields,field_description:ssi_school_deposit_admission.field_school_admission__display_name
+msgid "Display Name"
+msgstr "Nama Tampilan"
+
+#. module: ssi_school_deposit_admission
+#: model:ir.model.fields,field_description:ssi_school_deposit_admission.field_school_admission__id
+msgid "ID"
+msgstr "ID"
+
+#. module: ssi_school_deposit_admission
+#: model:ir.model.fields,field_description:ssi_school_deposit_admission.field_school_admission____last_update
+msgid "Last Modified on"
+msgstr "Terakhir Diubah pada"
+
+#. module: ssi_school_deposit_admission
+#: model:ir.model.fields,help:ssi_school_deposit_admission.field_school_admission__amount_deposit_realized
+msgid "Part of the settled amount that came from finished school deposit realizations. It is not a deduction and is left out of Other Credits."
+msgstr ""
+"Bagian dari jumlah yang diselesaikan yang berasal dari realisasi deposit sekolah yang telah selesai. Bukan potongan dan tidak dimasukkan ke Kredit Lainnya."
+
+#. module: ssi_school_deposit_admission
+#: model:ir.model,name:ssi_school_deposit_admission.model_school_admission
+msgid "School Admission"
+msgstr "Penerimaan Siswa"

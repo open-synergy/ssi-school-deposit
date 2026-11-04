@@ -1,0 +1,52 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ssi_school_deposit_fee_waiver
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-11-03 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: id\n"
+
+#. module: ssi_school_deposit_fee_waiver
+#: model:ir.model,name:ssi_school_deposit_fee_waiver.model_customer_invoice
+msgid "Customer Invoice"
+msgstr "Faktur Pelanggan"
+
+#. module: ssi_school_deposit_fee_waiver
+#: model:ir.model.fields,field_description:ssi_school_deposit_fee_waiver.field_customer_invoice__display_name
+#: model:ir.model.fields,field_description:ssi_school_deposit_fee_waiver.field_school_fee_waiver_deduction__display_name
+#: model:ir.model.fields,field_description:ssi_school_deposit_fee_waiver.field_school_fee_waiver_deduction_line__display_name
+msgid "Display Name"
+msgstr "Nama Tampilan"
+
+#. module: ssi_school_deposit_fee_waiver
+#: model:ir.model.fields,field_description:ssi_school_deposit_fee_waiver.field_customer_invoice__id
+#: model:ir.model.fields,field_description:ssi_school_deposit_fee_waiver.field_school_fee_waiver_deduction__id
+#: model:ir.model.fields,field_description:ssi_school_deposit_fee_waiver.field_school_fee_waiver_deduction_line__id
+msgid "ID"
+msgstr "ID"
+
+#. module: ssi_school_deposit_fee_waiver
+#: model:ir.model.fields,field_description:ssi_school_deposit_fee_waiver.field_customer_invoice____last_update
+#: model:ir.model.fields,field_description:ssi_school_deposit_fee_waiver.field_school_fee_waiver_deduction____last_update
+#: model:ir.model.fields,field_description:ssi_school_deposit_fee_waiver.field_school_fee_waiver_deduction_line____last_update
+msgid "Last Modified on"
+msgstr "Terakhir Diubah pada"
+
+#. module: ssi_school_deposit_fee_waiver
+#: model:ir.model,name:ssi_school_deposit_fee_waiver.model_school_fee_waiver_deduction
+msgid "School Fee Waiver Deduction"
+msgstr "Potongan Keringanan Biaya Sekolah"
+
+#. module: ssi_school_deposit_fee_waiver
+#: model:ir.model,name:ssi_school_deposit_fee_waiver.model_school_fee_waiver_deduction_line
+msgid "School Fee Waiver Deduction - Line"
+msgstr "Potongan Keringanan Biaya Sekolah - Baris"

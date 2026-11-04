@@ -1,0 +1,1278 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ssi_school_deposit
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-11-03 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: id\n"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__name
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__name
+msgid "# Document"
+msgstr "No. Dokumen"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__forfeit_id
+msgid "# Forfeit"
+msgstr "# Hangus"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__realization_id
+msgid "# Realization"
+msgstr "# Realisasi"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__account_id
+msgid "Account"
+msgstr "Akun"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__forfeit_account_id
+msgid "Account credited when an unused deposit of this type is forfeited, normally an other-income account of the issuing unit. Required before a forfeit document can be finished."
+msgstr ""
+"Akun yang dikredit saat deposit yang tidak terpakai dari jenis ini dihanguskan, biasanya akun pendapatan lain milik unit penerbit. Wajib diisi sebelum dokumen deposit hangus dapat diselesaikan."
+
+#. module: ssi_school_deposit
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_forfeit_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_realization_view_form
+msgid "Accounting"
+msgstr "Akuntansi"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__date
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit_line__date
+msgid "Accounting date of this forfeit document."
+msgstr "Tanggal akuntansi dokumen deposit hangus ini."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__date
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization_line__date
+msgid "Accounting date of this realization document."
+msgstr "Tanggal akuntansi dokumen realisasi ini."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__journal_id
+msgid "Accounting journal in which the entry of this document is posted. Defaulted from the Forfeit Journal of the selected Type. It must be filled before the document can be finished."
+msgstr ""
+"Jurnal akuntansi tempat entri dokumen ini diposting. Diisi otomatis dari Jurnal Deposit Hangus pada Jenis yang dipilih. Wajib diisi sebelum dokumen dapat diselesaikan."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__journal_id
+msgid "Accounting journal in which the entry of this document is posted. Defaulted from the Realization Journal of the selected Type."
+msgstr ""
+"Jurnal akuntansi tempat entri dokumen ini diposting. Diisi otomatis dari Jurnal Realisasi pada Jenis yang dipilih."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__message_needaction
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__message_needaction
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__message_needaction
+msgid "Action Needed"
+msgstr "Perlu Tindakan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__active
+msgid "Active"
+msgstr "Aktif"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__active_approval_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__active_approval_ids
+msgid "Active Approvals"
+msgstr "Persetujuan Aktif"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__active_approver_partner_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__active_approver_partner_ids
+msgid "Active Partners"
+msgstr "Mitra Aktif"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__active_approver_user_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__active_approver_user_ids
+msgid "Active Users"
+msgstr "Pengguna Aktif"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__activity_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__activity_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__activity_ids
+msgid "Activities"
+msgstr "Aktivitas"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__activity_exception_decoration
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__activity_exception_decoration
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Dekorasi Pengecualian Aktivitas"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__activity_state
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__activity_state
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__activity_state
+msgid "Activity State"
+msgstr "Status Aktivitas"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__activity_type_icon
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__activity_type_icon
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Ikon Jenis Aktivitas"
+
+#. module: ssi_school_deposit
+#: model:res.groups,name:ssi_school_deposit.school_deposit_forfeit_all_group
+#: model:res.groups,name:ssi_school_deposit.school_deposit_realization_all_group
+msgid "All"
+msgstr "Semua"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__allowed_policy_template_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__allowed_policy_template_ids
+msgid "Allowed Policy Templates"
+msgstr "Templat Kebijakan yang Diizinkan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__amount
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__amount
+msgid "Amount"
+msgstr "Jumlah"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__amount_total
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__amount_total
+msgid "Amount Total"
+msgstr "Total Jumlah"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__approval_template_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__approval_template_id
+msgid "Approval Configuration"
+msgstr "Konfigurasi Persetujuan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__approval_template_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__approval_template_id
+msgid "Approval Template"
+msgstr "Templat Persetujuan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__approval_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__approval_ids
+msgid "Approvals"
+msgstr "Persetujuan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__approve_ok
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__approve_ok
+msgid ""
+"Approve policy\n"
+"\n"
+"* If active user can see and execute 'Approve' button"
+msgstr ""
+"Kebijakan persetujuan\n"
+"\n"
+"* Jika pengguna aktif dapat melihat dan mengeksekusi tombol 'Setujui'"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__approved
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__approved
+msgid "Approved"
+msgstr "Disetujui"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__message_attachment_count
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__message_attachment_count
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__message_attachment_count
+msgid "Attachment Count"
+msgstr "Jumlah Lampiran"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__auto_realize
+msgid "Auto Realize"
+msgstr "Realisasi Otomatis"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__approve_ok
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__approve_ok
+msgid "Can Approve"
+msgstr "Dapat Menyetujui"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__cancel_ok
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__cancel_ok
+msgid "Can Cancel"
+msgstr "Dapat Membatalkan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__confirm_ok
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__confirm_ok
+msgid "Can Confirm"
+msgstr "Dapat Mengonfirmasi"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__done_ok
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__done_ok
+msgid "Can Finished"
+msgstr "Dapat Diselesaikan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__manual_number_ok
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__manual_number_ok
+msgid "Can Input Manual Document Number"
+msgstr "Dapat Mengisi Nomor Dokumen Manual"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__reject_ok
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__reject_ok
+msgid "Can Reject"
+msgstr "Dapat Menolak"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__restart_ok
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__restart_ok
+msgid "Can Restart"
+msgstr "Dapat Memulai Ulang"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__restart_approval_ok
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__restart_approval_ok
+msgid "Can Restart Approval"
+msgstr "Dapat Memulai Ulang Persetujuan"
+
+#. module: ssi_school_deposit
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_reprocess_view_form
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__cancel_reason_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__cancel_reason_id
+msgid "Cancel Reason"
+msgstr "Alasan Pembatalan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__cancel_ok
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__cancel_ok
+msgid ""
+"Cancel policy\n"
+"\n"
+"* If active user can see and execute 'Cancel' button"
+msgstr ""
+"Kebijakan pembatalan\n"
+"\n"
+"* Jika aktif, pengguna dapat melihat dan menekan tombol 'Batal'"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__code
+msgid "Code"
+msgstr "Kode"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__company_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__company_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__company_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__company_id
+#: model:res.groups,name:ssi_school_deposit.school_deposit_forfeit_company_group
+#: model:res.groups,name:ssi_school_deposit.school_deposit_realization_company_group
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__company_currency_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__company_currency_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__company_currency_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__company_currency_id
+msgid "Company Currency"
+msgstr "Mata Uang Perusahaan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__company_partner_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__company_partner_id
+msgid "Company Partner"
+msgstr "Mitra Perusahaan"
+
+#. module: ssi_school_deposit
+#: model:res.groups,name:ssi_school_deposit.school_deposit_forfeit_company_child_group
+#: model:res.groups,name:ssi_school_deposit.school_deposit_realization_company_child_group
+msgid "Company and All Child Companies"
+msgstr "Perusahaan dan Semua Perusahaan Turunan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__company_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit_line__company_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__company_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization_line__company_id
+msgid ""
+"Company that own the document\n"
+"\n"
+"* Automatically filled with user's company.\n"
+"  Default company can be changed"
+msgstr ""
+"Perusahaan pemilik dokumen\n"
+"\n"
+"* Terisi otomatis dengan perusahaan pengguna.\n"
+"  Perusahaan default dapat diubah"
+
+#. module: ssi_school_deposit
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_forfeit_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_realization_view_form
+msgid "Compute Lines"
+msgstr "Hitung Baris"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__confirm_ok
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__confirm_ok
+msgid ""
+"Confirm policy\n"
+"\n"
+"* If active user can see and execute 'Confirm' button"
+msgstr ""
+"Kebijakan konfirmasi\n"
+"\n"
+"* Jika pengguna aktif dapat melihat dan mengeksekusi tombol 'Konfirmasi'"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__create_uid
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__create_uid
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__create_uid
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__create_uid
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess__create_uid
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__create_date
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__create_date
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__create_date
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__create_date
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess__create_date
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__receivable_move_line_id
+msgid "Credit journal item on the Receivable Account created together with the journal entry, then reconciled against the receivable journal item of the invoice."
+msgstr ""
+"Item jurnal kredit pada Akun Piutang yang dibuat bersama entri jurnal, lalu direkonsiliasi dengan item jurnal piutang pada faktur."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__currency_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__currency_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__currency_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__currency_id
+msgid "Currency"
+msgstr "Mata Uang"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__currency_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit_line__currency_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__currency_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization_line__currency_id
+msgid "Currency this document is expressed in. This document does not support a currency other than the Company Currency."
+msgstr ""
+"Mata uang yang digunakan dokumen ini. Dokumen ini tidak mendukung mata uang selain Mata Uang Perusahaan."
+
+#. module: ssi_school_deposit
+#: model:ir.model,name:ssi_school_deposit.model_customer_invoice
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__customer_invoice_id
+msgid "Customer Invoice"
+msgstr "Faktur Pelanggan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__date
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__date
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__date
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__date
+msgid "Date"
+msgstr "Tanggal"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__deposit_account_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__deposit_account_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__deposit_account_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__deposit_account_id
+msgid "Deposit Account"
+msgstr "Akun Deposit"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__deposit_account_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit_line__deposit_account_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__deposit_account_id
+msgid "Deposit Account of the selected Type. Technical field used to filter the source journal items of the lines."
+msgstr ""
+"Akun Deposit pada Jenis yang dipilih. Field teknis yang digunakan untuk menyaring item jurnal sumber pada baris."
+
+#. module: ssi_school_deposit
+#: model:ir.ui.menu,name:ssi_school_deposit.school_deposit_forfeit_menu
+msgid "Deposit Forfeits"
+msgstr "Deposit Hangus"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__source_product_ids
+msgid "Deposit Products"
+msgstr "Produk Deposit"
+
+#. module: ssi_school_deposit
+#: model:ir.ui.menu,name:ssi_school_deposit.school_deposit_realization_menu
+msgid "Deposit Realizations"
+msgstr "Realisasi Deposit"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_enrollment__amount_deposit_realized
+msgid "Deposit Realized"
+msgstr "Deposit Terealisasi"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization_line__account_id
+msgid "Deposit account this line debits. Defaulted from the Deposit Account of the document's Type."
+msgstr ""
+"Akun deposit yang didebit baris ini. Diisi otomatis dari Akun Deposit pada Jenis dokumen."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit_line__source_move_line_id
+msgid "Deposit credit journal item this line forfeits. It must be posted on the Deposit Account of the document's Type, for the same Partner, and still have an unreconciled credit."
+msgstr ""
+"Item jurnal kredit deposit yang dihanguskan baris ini. Harus diposting pada Akun Deposit pada Jenis dokumen, untuk Mitra yang sama, dan masih memiliki kredit yang belum direkonsiliasi."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization_line__source_move_line_id
+msgid "Deposit credit journal item this line takes from. It must be posted on the Deposit Account of the document's Type, for the same Partner, and still have an unreconciled credit."
+msgstr ""
+"Item jurnal kredit deposit yang menjadi sumber baris ini. Harus diposting pada Akun Deposit pada Jenis dokumen, untuk Mitra yang sama, dan masih memiliki kredit yang belum direkonsiliasi."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__type_id
+msgid "Deposit type this document forfeits. It decides which deposit account, forfeit account and journal are used."
+msgstr ""
+"Jenis deposit yang dihanguskan dokumen ini. Menentukan akun deposit, akun deposit hangus, dan jurnal yang digunakan."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__type_id
+msgid "Deposit type this document realizes. It decides which deposit account and journal are used."
+msgstr ""
+"Jenis deposit yang direalisasikan dokumen ini. Menentukan akun deposit dan jurnal yang digunakan."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_reprocess__type_ids
+msgid "Deposit types to realize again."
+msgstr "Jenis deposit yang akan direalisasikan kembali."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_customer_invoice__display_name
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__display_name
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__display_name
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__display_name
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__display_name
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess__display_name
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__display_name
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_enrollment__display_name
+msgid "Display Name"
+msgstr "Nama Tampilan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__done_ok
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__done_ok
+msgid ""
+"Done policy\n"
+"\n"
+"* If active user can see and execute 'Done' button"
+msgstr ""
+"Kebijakan Selesai\n"
+"\n"
+"* Jika aktif, pengguna dapat melihat dan mengeksekusi tombol 'Selesai'"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__message_follower_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__message_follower_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__message_follower_ids
+msgid "Followers"
+msgstr "Pengikut"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__message_channel_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__message_channel_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__message_channel_ids
+msgid "Followers (Channels)"
+msgstr "Pengikut (Saluran)"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__message_partner_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__message_partner_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Pengikut (Mitra)"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__activity_type_icon
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__activity_type_icon
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Ikon Font Awesome mis. fa-tasks"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__forfeit_account_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__forfeit_account_id
+msgid "Forfeit Account"
+msgstr "Akun Deposit Hangus"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__forfeit_account_id
+msgid "Forfeit Account of the selected Type. The header entry line credits it."
+msgstr ""
+"Akun Deposit Hangus pada Jenis yang dipilih. Baris entri header mengkreditnya."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__forfeit_journal_id
+msgid "Forfeit Journal"
+msgstr "Jurnal Deposit Hangus"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit_line__forfeit_id
+msgid "Forfeit document this line belongs to."
+msgstr "Dokumen deposit hangus tempat baris ini berada."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__line_ids
+msgid "Forfeit lines, one per deposit journal item forfeited. Their sum is this document's Amount Total."
+msgstr ""
+"Baris deposit hangus, satu untuk setiap item jurnal deposit yang dihanguskan. Jumlahnya adalah Total Jumlah dokumen ini."
+
+#. module: ssi_school_deposit
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_forfeit_view_search
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_realization_view_search
+msgid "Group By"
+msgstr "Kelompokkan Berdasarkan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_customer_invoice__id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess__id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_enrollment__id
+msgid "ID"
+msgstr "ID"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__activity_exception_icon
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__activity_exception_icon
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__activity_exception_icon
+msgid "Icon"
+msgstr "Ikon"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__activity_exception_icon
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__activity_exception_icon
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Ikon untuk menunjukkan aktivitas pengecualian."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__auto_realize
+msgid "If checked, a realization is proposed automatically whenever a payable invoice is posted. If unchecked, realizations of this type are created by hand only."
+msgstr ""
+"Jika dicentang, realisasi diusulkan secara otomatis setiap kali faktur yang dapat dibayar diposting. Jika tidak dicentang, realisasi jenis ini hanya dibuat secara manual."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__message_needaction
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__message_unread
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__message_needaction
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__message_unread
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__message_needaction
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__message_unread
+msgid "If checked, new messages require your attention."
+msgstr "Jika dicentang, pesan baru memerlukan perhatian Anda."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__message_has_error
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__message_has_error
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Jika dicentang, beberapa pesan mengalami kesalahan pengiriman."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__message_is_follower
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__message_is_follower
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__message_is_follower
+msgid "Is Follower"
+msgstr "Adalah Pengikut"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__journal_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__journal_id
+msgid "Journal"
+msgstr "Jurnal"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__move_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__move_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__move_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__move_id
+msgid "Journal Entry"
+msgstr "Entri Jurnal"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__move_line_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__move_line_id
+msgid "Journal Item"
+msgstr "Item Jurnal"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__move_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit_line__move_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__move_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization_line__move_id
+msgid "Journal entry generated when this document is finished."
+msgstr "Entri jurnal yang dihasilkan saat dokumen ini diselesaikan."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__forfeit_journal_id
+msgid "Journal in which the entry of a forfeit of this deposit type is posted. Required before a forfeit document can be finished. Bank and Cash journals are not offered, since a forfeit is not a received payment."
+msgstr ""
+"Jurnal tempat entri deposit hangus jenis deposit ini diposting. Wajib diisi sebelum dokumen deposit hangus dapat diselesaikan. Jurnal Bank dan Kas tidak ditawarkan, karena deposit hangus bukan pembayaran yang diterima."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__realization_journal_id
+msgid "Journal in which the entry of a realization of this deposit type is posted. Bank and Cash journals are not offered, since a realization is not a received payment."
+msgstr ""
+"Jurnal tempat entri realisasi jenis deposit ini diposting. Jurnal Bank dan Kas tidak ditawarkan, karena realisasi bukan pembayaran yang diterima."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit_line__move_line_id
+msgid "Journal item created for this line once the forfeit is accounted for."
+msgstr ""
+"Item jurnal yang dibuat untuk baris ini setelah deposit hangus dibukukan."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization_line__move_line_id
+msgid "Journal item created for this line once the realization is accounted for."
+msgstr ""
+"Item jurnal yang dibuat untuk baris ini setelah realisasi dibukukan."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_customer_invoice____last_update
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit____last_update
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line____last_update
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization____last_update
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line____last_update
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess____last_update
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type____last_update
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_enrollment____last_update
+msgid "Last Modified on"
+msgstr "Terakhir Diubah pada"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__write_uid
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__write_uid
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__write_uid
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__write_uid
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess__write_uid
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir Diperbarui oleh"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__write_date
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__write_date
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__write_date
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__write_date
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess__write_date
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__write_date
+msgid "Last Updated on"
+msgstr "Terakhir Diperbarui pada"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__deposit_account_id
+msgid "Liability account credited when a deposit invoice is posted. It must allow reconciliation, because a realization reconciles its journal item against the deposit credit."
+msgstr ""
+"Akun kewajiban yang dikredit saat faktur deposit diposting. Harus mengizinkan rekonsiliasi, karena realisasi merekonsiliasi item jurnalnya dengan kredit deposit."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_reprocess__partner_ids
+msgid "Limit the run to these partners. Leave empty for all."
+msgstr "Batasi proses pada mitra berikut. Kosongkan untuk semua mitra."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__line_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__line_ids
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_forfeit_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_realization_view_form
+msgid "Lines"
+msgstr "Baris"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__message_main_attachment_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__message_main_attachment_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Lampiran Utama"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__manual_number_ok
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__manual_number_ok
+msgid ""
+"Manual number assignment policy\n"
+"\n"
+"* If active user can edit document number"
+msgstr ""
+"Kebijakan penetapan nomor manual\n"
+"\n"
+"* Jika pengguna aktif dapat mengubah nomor dokumen"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__active
+msgid ""
+"Master data status\n"
+"\n"
+"* Inactive data can not be selected when creating new transaction\n"
+"* Transaction with inactive master data can still be viewed\n"
+"* Set master data as inactive if master data no longger needed,\n"
+"but master data already used on transaction"
+msgstr ""
+"Status data master\n"
+"\n"
+"* Data tidak aktif tidak dapat dipilih saat membuat transaksi baru\n"
+"* Transaksi dengan data master tidak aktif masih dapat dilihat\n"
+"* Setel data master menjadi tidak aktif jika data master tidak lagi diperlukan,\n"
+"tetapi data master sudah digunakan pada transaksi"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__code
+msgid ""
+"Master data unique identifier.\n"
+"\n"
+"* Fill with '/' if You do not need unique identifier\n"
+"* Click 'Generate Code' button to automatically assign code.\n"
+"  Sequence template mush be set to perform this action\n"
+"  Only master data with '/' code will be assign automatic code"
+msgstr ""
+"Pengidentifikasi unik data master.\n"
+"\n"
+"* Isi dengan '/' jika Anda tidak memerlukan pengidentifikasi unik\n"
+"* Klik tombol 'Buat Kode' untuk menetapkan kode secara otomatis.\n"
+"  Template penomoran harus disetel untuk melakukan tindakan ini\n"
+"  Hanya data master dengan kode '/' yang akan diberi kode otomatis"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__message_has_error
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__message_has_error
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__message_has_error
+msgid "Message Delivery error"
+msgstr "Kesalahan Pengiriman Pesan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__message_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__message_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__message_ids
+msgid "Messages"
+msgstr "Pesan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Batas Waktu Aktivitas Saya"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__name
+msgid "Name"
+msgstr "Nama"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__need_validation
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__need_validation
+msgid "Need Validation"
+msgstr "Perlu Validasi"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Batas Waktu Aktivitas Berikutnya"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__activity_summary
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__activity_summary
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__activity_summary
+msgid "Next Activity Summary"
+msgstr "Ringkasan Aktivitas Berikutnya"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__activity_type_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__activity_type_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__activity_type_id
+msgid "Next Activity Type"
+msgstr "Jenis Aktivitas Berikutnya"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__next_approval_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__next_approval_ids
+msgid "Next Approvals"
+msgstr "Persetujuan Berikutnya"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__note
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__note
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__note
+msgid "Note"
+msgstr "Catatan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__message_needaction_counter
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__message_needaction_counter
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Jumlah Tindakan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__message_has_error_counter
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__message_has_error_counter
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__message_has_error_counter
+msgid "Number of errors"
+msgstr "Jumlah kesalahan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__message_needaction_counter
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__message_needaction_counter
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "Jumlah pesan yang memerlukan tindakan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__message_has_error_counter
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__message_has_error_counter
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Jumlah pesan dengan kesalahan pengiriman"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__message_unread_counter
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__message_unread_counter
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__message_unread_counter
+msgid "Number of unread messages"
+msgstr "Jumlah pesan yang belum dibaca"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__customer_invoice_id
+msgid "Open customer invoice of the Partner that this realization settles."
+msgstr ""
+"Faktur pelanggan terbuka milik Mitra yang diselesaikan oleh realisasi ini."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_enrollment__amount_deposit_realized
+msgid "Part of the settled amount that came from finished school deposit realizations. It is not a deduction and is left out of Other Credits."
+msgstr ""
+"Bagian dari jumlah yang diselesaikan yang berasal dari realisasi deposit sekolah yang telah selesai. Bukan potongan dan tidak dimasukkan ke Kredit Lainnya."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__partner_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__partner_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__partner_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__partner_id
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_forfeit_view_search
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_realization_view_search
+msgid "Partner"
+msgstr "Mitra"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__partner_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization_line__partner_id
+msgid "Partner who paid the deposit and owes the invoice. Must match the Partner of the selected invoice and of every source journal item."
+msgstr ""
+"Mitra yang membayar deposit dan memiliki utang pada faktur. Harus sama dengan Mitra pada faktur yang dipilih dan pada setiap item jurnal sumber."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__partner_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit_line__partner_id
+msgid "Partner who paid the deposit being forfeited. Must match the Partner of every source journal item."
+msgstr ""
+"Mitra yang membayar deposit yang dihanguskan. Harus sama dengan Mitra pada setiap item jurnal sumber."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess__partner_ids
+msgid "Partners"
+msgstr "Mitra"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__target_product_ids
+msgid "Payable Products"
+msgstr "Produk yang Dapat Dibayar"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__policy_template_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__policy_template_id
+msgid "Policy Template"
+msgstr "Templat Kebijakan"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit_line__amount
+msgid "Portion of the source journal item being forfeited. Must be greater than zero and not more than what the source still has. Defaulted to the whole remaining amount."
+msgstr ""
+"Bagian dari item jurnal sumber yang dihanguskan. Harus lebih besar dari nol dan tidak melebihi sisa pada sumber. Diisi otomatis dengan seluruh sisa jumlah."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization_line__amount
+msgid "Portion of the source journal item being used. Must be greater than zero."
+msgstr ""
+"Bagian dari item jurnal sumber yang digunakan. Harus lebih besar dari nol."
+
+#. module: ssi_school_deposit
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_type_view_form
+msgid "Products"
+msgstr "Produk"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__source_product_ids
+msgid "Products whose invoice lines record a deposit of this type. A deposit is only taken from invoices that carry one of these products."
+msgstr ""
+"Produk yang baris fakturnya mencatat deposit jenis ini. Deposit hanya diambil dari faktur yang memuat salah satu produk ini."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__target_product_ids
+msgid "Products whose invoice lines this deposit may be used to settle."
+msgstr ""
+"Produk yang baris fakturnya dapat diselesaikan menggunakan deposit ini."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__realization_journal_id
+msgid "Realization Journal"
+msgstr "Jurnal Realisasi"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization_line__realization_id
+msgid "Realization document this line belongs to."
+msgstr "Dokumen realisasi tempat baris ini berada."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__line_ids
+msgid "Realization lines, one per deposit journal item used. Their sum is this document's Amount Total."
+msgstr ""
+"Baris realisasi, satu untuk setiap item jurnal deposit yang digunakan. Jumlahnya adalah Total Jumlah dokumen ini."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__receivable_account_id
+msgid "Receivable Account"
+msgstr "Akun Piutang"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__receivable_account_id
+msgid "Receivable Account of the selected invoice. The header entry line credits it."
+msgstr ""
+"Akun Piutang pada faktur yang dipilih. Baris entri header mengkreditnya."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__receivable_move_line_id
+msgid "Receivable Journal Item"
+msgstr "Item Jurnal Piutang"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__reject_ok
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__reject_ok
+msgid ""
+"Reject policy\n"
+"\n"
+"* If active user can see and execute 'Reject' button"
+msgstr ""
+"Kebijakan penolakan\n"
+"\n"
+"* Jika pengguna aktif dapat melihat dan mengeksekusi tombol 'Tolak'"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__rejected
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__rejected
+msgid "Rejected"
+msgstr "Ditolak"
+
+#. module: ssi_school_deposit
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_reprocess_view_form
+msgid "Reprocess"
+msgstr "Proses Ulang"
+
+#. module: ssi_school_deposit
+#: model:ir.actions.act_window,name:ssi_school_deposit.school_deposit_reprocess_action
+#: model:ir.ui.menu,name:ssi_school_deposit.school_deposit_reprocess_menu
+msgid "Reprocess Deposit Realizations"
+msgstr "Proses Ulang Realisasi Deposit"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__user_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__user_id
+msgid "Responsible"
+msgstr "Penanggung Jawab"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__activity_user_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__activity_user_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__activity_user_id
+msgid "Responsible User"
+msgstr "Pengguna Penanggung Jawab"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__restart_approval_ok
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__restart_approval_ok
+msgid ""
+"Restart approval policy\n"
+"\n"
+"* If active user can see and execute 'Restart Approval' button"
+msgstr ""
+"Kebijakan mulai ulang persetujuan\n"
+"\n"
+"* Jika pengguna aktif dapat melihat dan mengeksekusi tombol 'Mulai Ulang Persetujuan'"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__restart_ok
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__restart_ok
+msgid ""
+"Restart policy\n"
+"\n"
+"* If active user can see and execute 'Restart' button"
+msgstr ""
+"Kebijakan mulai ulang\n"
+"\n"
+"* Jika aktif, pengguna dapat melihat dan menekan tombol 'Mulai Ulang'"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__reviewer_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__reviewer_id
+msgid "Reviewer"
+msgstr "Pemeriksa"
+
+#. module: ssi_school_deposit
+#: model:ir.ui.menu,name:ssi_school_deposit.menu_school_deposit
+#: model:ir.ui.menu,name:ssi_school_deposit.menu_school_deposit_configuration
+msgid "School Deposit"
+msgstr "Deposit Sekolah"
+
+#. module: ssi_school_deposit
+#: model:ir.model,name:ssi_school_deposit.model_school_deposit_forfeit
+#: model:ir.module.category,name:ssi_school_deposit.school_deposit_forfeit_data_ownership_module_category
+#: model:ir.module.category,name:ssi_school_deposit.school_deposit_forfeit_workflow_module_category
+msgid "School Deposit Forfeit"
+msgstr "Deposit Sekolah Hangus"
+
+#. module: ssi_school_deposit
+#: model:ir.model,name:ssi_school_deposit.model_school_deposit_forfeit_line
+msgid "School Deposit Forfeit - Line"
+msgstr "Deposit Sekolah Hangus - Baris"
+
+#. module: ssi_school_deposit
+#: model:ir.actions.act_window,name:ssi_school_deposit.school_deposit_forfeit_action
+msgid "School Deposit Forfeits"
+msgstr "Deposit Sekolah Hangus"
+
+#. module: ssi_school_deposit
+#: model:ir.model,name:ssi_school_deposit.model_school_deposit_realization
+#: model:ir.module.category,name:ssi_school_deposit.school_deposit_realization_data_ownership_module_category
+#: model:ir.module.category,name:ssi_school_deposit.school_deposit_realization_workflow_module_category
+msgid "School Deposit Realization"
+msgstr "Realisasi Deposit Sekolah"
+
+#. module: ssi_school_deposit
+#: model:ir.model,name:ssi_school_deposit.model_school_deposit_realization_line
+msgid "School Deposit Realization - Line"
+msgstr "Realisasi Deposit Sekolah - Baris"
+
+#. module: ssi_school_deposit
+#: model:ir.actions.act_window,name:ssi_school_deposit.school_deposit_realization_action
+msgid "School Deposit Realizations"
+msgstr "Realisasi Deposit Sekolah"
+
+#. module: ssi_school_deposit
+#: model:ir.model,name:ssi_school_deposit.model_school_deposit_reprocess
+msgid "School Deposit Reprocess"
+msgstr "Proses Ulang Deposit Sekolah"
+
+#. module: ssi_school_deposit
+#: model:ir.model,name:ssi_school_deposit.model_school_deposit_type
+#: model:res.groups,name:ssi_school_deposit.school_deposit_type_group
+msgid "School Deposit Type"
+msgstr "Jenis Deposit Sekolah"
+
+#. module: ssi_school_deposit
+#: model:ir.actions.act_window,name:ssi_school_deposit.school_deposit_type_action
+#: model:ir.ui.menu,name:ssi_school_deposit.school_deposit_type_menu
+msgid "School Deposit Types"
+msgstr "Jenis Deposit Sekolah"
+
+#. module: ssi_school_deposit
+#: model:ir.model,name:ssi_school_deposit.model_school_enrollment
+msgid "School Enrollment"
+msgstr "Pendaftaran Siswa"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit_line__source_move_line_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization_line__source_move_line_id
+msgid "Source Journal Item"
+msgstr "Item Jurnal Sumber"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__state
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__state
+msgid "State"
+msgstr "Status"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__activity_state
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__activity_state
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Status berdasarkan aktivitas\n"
+"Terlambat: Tanggal jatuh tempo sudah lewat\n"
+"Hari ini: Tanggal aktivitas adalah hari ini\n"
+"Direncanakan: Aktivitas mendatang."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__amount_total
+msgid "Sum of the lines' Amount. This is also the amount credited to the Forfeit Account."
+msgstr ""
+"Jumlah dari Jumlah pada seluruh baris. Ini juga merupakan jumlah yang dikredit ke Akun Deposit Hangus."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__amount_total
+msgid "Sum of the lines' Amount. This is also the amount credited to the partner's receivable account."
+msgstr ""
+"Jumlah dari Jumlah pada seluruh baris. Ini juga merupakan jumlah yang dikredit ke akun piutang mitra."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__name
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__name
+msgid ""
+"Transaction/document number\n"
+"\n"
+"* Unique indentifer of transaction\n"
+"* Leave '/' to automatically generate number\n"
+"* Change '/' into any number/identifier to manually assign number.\n"
+"  Manual number assignment can be done in 'Draft' state\n"
+"  Only user with 'Can Manualy Assign Number' policy can manually assign number.\n"
+"* Transaction with number other than '/' can not be deleted."
+msgstr ""
+"Nomor transaksi/dokumen\n"
+"\n"
+"* Pengenal unik transaksi\n"
+"* Biarkan '/' untuk menghasilkan nomor secara otomatis\n"
+"* Ubah '/' menjadi nomor/pengenal apa pun untuk menetapkan nomor secara manual.\n"
+"  Penetapan nomor manual dapat dilakukan pada status 'Draf'\n"
+"  Hanya pengguna dengan kebijakan 'Dapat Menetapkan Nomor Manual' yang dapat menetapkan nomor secara manual.\n"
+"* Transaksi dengan nomor selain '/' tidak dapat dihapus."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__type_id
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__type_id
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_forfeit_view_search
+#: model_terms:ir.ui.view,arch_db:ssi_school_deposit.school_deposit_realization_view_search
+msgid "Type"
+msgstr "Jenis"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__activity_exception_decoration
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__activity_exception_decoration
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Jenis aktivitas pengecualian pada catatan."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_reprocess__type_ids
+msgid "Types"
+msgstr "Jenis"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__message_unread
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__message_unread
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__message_unread
+msgid "Unread Messages"
+msgstr "Pesan yang Belum Dibaca"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__message_unread_counter
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__message_unread_counter
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "Penghitung Pesan yang Belum Dibaca"
+
+#. module: ssi_school_deposit
+#: model:res.groups,name:ssi_school_deposit.school_deposit_forfeit_user_group
+#: model:res.groups,name:ssi_school_deposit.school_deposit_realization_user_group
+msgid "User"
+msgstr "Pengguna"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__user_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__user_id
+msgid ""
+"User that responsible for document\n"
+"\n"
+"* Create user can be different with responsible user\n"
+"* Automatically filled with user that initiate document creation.\n"
+"  Default responsible can be changed."
+msgstr ""
+"Pengguna yang bertanggung jawab atas dokumen\n"
+"\n"
+"* Pengguna pembuat dapat berbeda dengan pengguna penanggung jawab\n"
+"* Terisi otomatis dengan pengguna yang memulai pembuatan dokumen.\n"
+"  Penanggung jawab default dapat diubah."
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__reviewer_id
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__reviewer_id
+msgid ""
+"User that responsible to review document\n"
+"\n"
+"* Unless it configured to approve reviewer does not equal to approver"
+msgstr ""
+"Pengguna yang bertanggung jawab memeriksa dokumen\n"
+"\n"
+"* Kecuali dikonfigurasi untuk menyetujui, pemeriksa tidak sama dengan penyetuju"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__active_approver_user_ids
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__active_approver_user_ids
+msgid "Users that can approve/reject document"
+msgstr "Pengguna yang dapat menyetujui/menolak dokumen"
+
+#. module: ssi_school_deposit
+#: model:res.groups,name:ssi_school_deposit.school_deposit_forfeit_validator_group
+#: model:res.groups,name:ssi_school_deposit.school_deposit_realization_validator_group
+msgid "Validator"
+msgstr "Validator"
+
+#. module: ssi_school_deposit
+#: model:res.groups,name:ssi_school_deposit.school_deposit_forfeit_viewer_group
+#: model:res.groups,name:ssi_school_deposit.school_deposit_realization_viewer_group
+msgid "Viewer"
+msgstr "Penampil"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__website_message_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__website_message_ids
+#: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__website_message_ids
+msgid "Website Messages"
+msgstr "Pesan Situs Web"
+
+#. module: ssi_school_deposit
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__website_message_ids
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__website_message_ids
+#: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__website_message_ids
+msgid "Website communication history"
+msgstr "Riwayat komunikasi situs web"
