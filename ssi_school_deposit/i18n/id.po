@@ -1173,7 +1173,7 @@ msgstr ""
 "* Pengenal unik transaksi\n"
 "* Biarkan '/' untuk menghasilkan nomor secara otomatis\n"
 "* Ubah '/' menjadi nomor/pengenal apa pun untuk menetapkan nomor secara manual.\n"
-"  Penetapan nomor manual dapat dilakukan pada status 'Draft'\n"
+"  Penetapan nomor manual dapat dilakukan pada status 'Draf'\n"
 "  Hanya pengguna dengan kebijakan 'Dapat Menetapkan Nomor Manual' yang dapat menetapkan nomor secara manual.\n"
 "* Transaksi dengan nomor selain '/' tidak dapat dihapus."
 
