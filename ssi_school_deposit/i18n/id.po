@@ -306,7 +306,7 @@ msgstr "Mitra Perusahaan"
 #: model:res.groups,name:ssi_school_deposit.school_deposit_forfeit_company_child_group
 #: model:res.groups,name:ssi_school_deposit.school_deposit_realization_company_child_group
 msgid "Company and All Child Companies"
-msgstr "Perusahaan dan Semua Perusahaan Anak"
+msgstr "Perusahaan dan Semua Perusahaan Turunan"
 
 #. module: ssi_school_deposit
 #: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__company_id
@@ -319,9 +319,9 @@ msgid ""
 "* Automatically filled with user's company.\n"
 "  Default company can be changed"
 msgstr ""
-"Perusahaan yang memiliki dokumen\n"
+"Perusahaan pemilik dokumen\n"
 "\n"
-"* Otomatis diisi dengan perusahaan pengguna.\n"
+"* Terisi otomatis dengan perusahaan pengguna.\n"
 "  Perusahaan default dapat diubah"
 
 #. module: ssi_school_deposit
@@ -603,7 +603,7 @@ msgstr "Jika dicentang, pesan baru memerlukan perhatian Anda."
 #: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_realization__message_has_error
 #: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__message_has_error
 msgid "If checked, some messages have a delivery error."
-msgstr "Jika dicentang, beberapa pesan memiliki kesalahan pengiriman."
+msgstr "Jika dicentang, beberapa pesan mengalami kesalahan pengiriman."
 
 #. module: ssi_school_deposit
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__message_is_follower
@@ -732,7 +732,7 @@ msgid ""
 msgstr ""
 "Kebijakan penetapan nomor manual\n"
 "\n"
-"* Jika aktif, pengguna dapat mengedit nomor dokumen"
+"* Jika pengguna aktif dapat mengubah nomor dokumen"
 
 #. module: ssi_school_deposit
 #: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_type__active
@@ -1139,9 +1139,9 @@ msgid ""
 "Planned: Future activities."
 msgstr ""
 "Status berdasarkan aktivitas\n"
-"Terlambat: Tanggal jatuh tempo telah berlalu\n"
+"Terlambat: Tanggal jatuh tempo sudah lewat\n"
 "Hari ini: Tanggal aktivitas adalah hari ini\n"
-"Direncanakan: Aktivitas di masa depan."
+"Direncanakan: Aktivitas mendatang."
 
 #. module: ssi_school_deposit
 #: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__amount_total
@@ -1209,7 +1209,7 @@ msgstr "Pesan yang Belum Dibaca"
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_type__message_unread_counter
 msgid "Unread Messages Counter"
-msgstr "Penghitung Pesan Belum Dibaca"
+msgstr "Penghitung Pesan yang Belum Dibaca"
 
 #. module: ssi_school_deposit
 #: model:res.groups,name:ssi_school_deposit.school_deposit_forfeit_user_group
@@ -1229,8 +1229,8 @@ msgid ""
 msgstr ""
 "Pengguna yang bertanggung jawab atas dokumen\n"
 "\n"
-"* Pembuat dapat berbeda dengan penanggung jawab\n"
-"* Otomatis diisi dengan pengguna yang memulai pembuatan dokumen.\n"
+"* Pengguna pembuat dapat berbeda dengan pengguna penanggung jawab\n"
+"* Terisi otomatis dengan pengguna yang memulai pembuatan dokumen.\n"
 "  Penanggung jawab default dapat diubah."
 
 #. module: ssi_school_deposit
@@ -1241,9 +1241,9 @@ msgid ""
 "\n"
 "* Unless it configured to approve reviewer does not equal to approver"
 msgstr ""
-"Pengguna yang bertanggung jawab meninjau dokumen\n"
+"Pengguna yang bertanggung jawab memeriksa dokumen\n"
 "\n"
-"* Kecuali dikonfigurasi, peninjau tidak sama dengan penyetuju"
+"* Kecuali dikonfigurasi untuk menyetujui, pemeriksa tidak sama dengan penyetuju"
 
 #. module: ssi_school_deposit
 #: model:ir.model.fields,help:ssi_school_deposit.field_school_deposit_forfeit__active_approver_user_ids
