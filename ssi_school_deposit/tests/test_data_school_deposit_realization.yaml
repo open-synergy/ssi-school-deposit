@@ -413,3 +413,68 @@ scenarios:
           account_id:
             type: "m2o"
             expected: "REC: deposit_account"
+
+  - name:
+      "School Deposit Realization - Force delete of a referenced invoice is rejected"
+    steps:
+      - step: "Create the realization that references the invoice"
+        action: "create"
+        model: "school_deposit_realization"
+        save_as: "realization"
+        values:
+          type_id: "REC: deposit_type.id"
+          partner_id: "REC: customer.id"
+          customer_invoice_id: "REC: invoice.id"
+          journal_id: "REC: general_journal.id"
+          date: 2026-08-10
+          user_id: "REF: base.user_admin"
+
+      - step: "Assert the realization exists, which flushes pending writes"
+        action: "assert"
+        target: "realization"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "The force delete check names the realization and rejects"
+        action: "call"
+        target: "invoice"
+        method: "_check_force_delete_allowed"
+        expect_error:
+          type: "UserError"
+          message_contains: "Deposit realization"
+
+      - step: "Assert the invoice and the realization are untouched"
+        action: "assert"
+        target: "invoice"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          partner_id:
+            type: "m2o"
+            expected: "REC: customer"
+
+      - step: "Assert the realization still references the invoice"
+        action: "assert"
+        target: "realization"
+        asserts:
+          customer_invoice_id:
+            type: "m2o"
+            expected: "REC: invoice"
+
+  - name: "School Deposit Realization - Force delete of an unreferenced invoice passes"
+    steps:
+      - step: "The force delete check does not raise for an unreferenced invoice"
+        action: "call"
+        target: "invoice"
+        method: "_check_force_delete_allowed"
+
+      - step: "Assert the invoice still exists"
+        action: "assert"
+        target: "invoice"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"

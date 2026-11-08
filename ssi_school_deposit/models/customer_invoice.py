@@ -23,6 +23,40 @@ class CustomerInvoice(models.Model):
         self.ensure_one()
         return 0.0
 
+    def _check_force_delete_allowed(self):
+        """Reject a force delete of an invoice a deposit relies on.
+
+        Contract K1 override. Calls ``super()`` first, then refuses
+        when any ``school_deposit_realization`` references this
+        invoice, whatever the realization state: the
+        ``ondelete="restrict"`` reference still holds for a cancelled
+        document. Read-only.
+
+        :raises UserError: when a deposit realization references this
+            invoice
+        :return: None
+        """
+        super()._check_force_delete_allowed()
+        self.ensure_one()
+        realization = (
+            self.env["school_deposit_realization"]
+            .sudo()
+            .search([("customer_invoice_id", "=", self.id)], limit=1)
+        )
+        if realization:
+            error_message = (
+                _(
+                    """
+Context: Force delete customer invoice
+Database ID: %s
+Problem: Deposit realization '%s' still references this invoice
+Solution: Remove the deposit realization before force deleting the invoice
+"""
+                )
+                % (self.id, realization.display_name)
+            )
+            raise UserError(error_message)
+
     @ssi_decorator.post_open_action()
     def _90_realize_school_deposit(self):
         """Realize every auto-realize deposit type payable here.
