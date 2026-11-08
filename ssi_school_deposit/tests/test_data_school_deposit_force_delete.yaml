@@ -1,0 +1,412 @@
+# T-01 (odoo-development-unit-test/test-traps.md): the `setup:` block replays
+# before every scenario inside one un-rolled-back transaction, so every
+# unique-constrained value is generated from a record count per replay.
+# Fixture pattern follows ssi_school `test_data_enrollment_force_delete_invoice`.
+options:
+  auto_refresh: true
+
+# `setup:` replays before every scenario in the same transaction, so every
+# unique value (codes) is generated from a record count on each replay.
+setup:
+  steps:
+    - step: "Setup - get sale journal"
+      action: "search"
+      model: "account.journal"
+      domain: [["type", "=", "sale"]]
+      save_as: "sale_journal"
+      limit: 1
+
+    - step: "Setup - create general journal for payment entries"
+      action: "create"
+      model: "account.journal"
+      save_as: "general_journal"
+      values:
+        name:
+          "EVAL: 'SDFD General Journal %d' % env['account.journal'].search_count([])"
+        code: "EVAL: 'SDFJ%d' % env['account.journal'].search_count([])"
+        type: "general"
+
+    - step: "Setup - get receivable account type"
+      action: "ref"
+      xml_id: "account.data_account_type_receivable"
+      save_as: "receivable_type"
+
+    - step: "Setup - get revenue account type"
+      action: "ref"
+      xml_id: "account.data_account_type_revenue"
+      save_as: "revenue_type"
+
+    - step: "Setup - create Receivable account"
+      action: "create"
+      model: "account.account"
+      save_as: "receivable_account"
+      values:
+        name: "EVAL: 'SDFD Receivable %d' % env['account.account'].search_count([])"
+        code: "EVAL: 'SDFR%d' % env['account.account'].search_count([])"
+        user_type_id: "REC: receivable_type.id"
+        reconcile: true
+
+    - step: "Setup - create Income account"
+      action: "create"
+      model: "account.account"
+      save_as: "income_account"
+      values:
+        name: "EVAL: 'SDFD Income %d' % env['account.account'].search_count([])"
+        code: "EVAL: 'SDFI%d' % env['account.account'].search_count([])"
+        user_type_id: "REC: revenue_type.id"
+
+    - step: "Setup - create Contra account"
+      action: "create"
+      model: "account.account"
+      save_as: "contra_account"
+      values:
+        name: "EVAL: 'SDFD Contra %d' % env['account.account'].search_count([])"
+        code: "EVAL: 'SDFC%d' % env['account.account'].search_count([])"
+        user_type_id: "REC: revenue_type.id"
+
+    - step: "Setup - create customer invoice type"
+      action: "create"
+      model: "customer_invoice_type"
+      save_as: "ci_type"
+      values:
+        name:
+          "EVAL: 'SDFD Invoice Type %d' % env['customer_invoice_type'].search_count([])"
+        code: "EVAL: 'SDFT%d' % env['customer_invoice_type'].search_count([])"
+        journal_id: "REC: sale_journal.id"
+        receivable_account_id: "REC: receivable_account.id"
+
+    - step: "Setup - create product"
+      action: "create"
+      model: "product.product"
+      save_as: "product"
+      values:
+        name: "EVAL: 'SDFD Fee %d' % env['product.product'].search_count([])"
+        type: "service"
+        list_price: 1000000.0
+
+    - step: "Setup - create pricelist"
+      action: "create"
+      model: "product.pricelist"
+      save_as: "pricelist"
+      values:
+        name: "EVAL: 'SDFD Pricelist %d' % env['product.pricelist'].search_count([])"
+        currency_id: "EVAL: env.company.currency_id.id"
+
+    - step: "Setup - create grade type"
+      action: "create"
+      model: "school_grade_type"
+      save_as: "grade_type"
+      values:
+        name: "EVAL: 'SDFD Grade Type %d' % env['school_grade_type'].search_count([])"
+        code: "EVAL: 'SDFGT%d' % env['school_grade_type'].search_count([])"
+        sequence: 10
+
+    - step: "Setup - create academic year"
+      action: "create"
+      model: "school_academic_year"
+      save_as: "academic_year"
+      values:
+        name: "EVAL: 'SDFD Year %d' % env['school_academic_year'].search_count([])"
+        code: "EVAL: 'SDFAY%d' % env['school_academic_year'].search_count([])"
+        date_start: "2024-07-01"
+        date_end: "2025-06-30"
+
+    - step: "Setup - create academic term 1 (enrollment open, not last)"
+      action: "create"
+      model: "school_academic_term"
+      save_as: "academic_term"
+      values:
+        name:
+          "EVAL: 'SDFD Semester A %d' % env['school_academic_term'].search_count([])"
+        code: "EVAL: 'SDFSA%d' % env['school_academic_term'].search_count([])"
+        date_start: "2024-07-01"
+        date_end: "2024-12-31"
+        year_id: "EVAL: registry['academic_year'].id"
+        enrollment_state: "open"
+
+    - step: "Setup - create academic term 2 (last term)"
+      action: "create"
+      model: "school_academic_term"
+      save_as: "academic_term_2"
+      values:
+        name:
+          "EVAL: 'SDFD Semester B %d' % env['school_academic_term'].search_count([])"
+        code: "EVAL: 'SDFSB%d' % env['school_academic_term'].search_count([])"
+        date_start: "2025-01-01"
+        date_end: "2025-06-30"
+        year_id: "EVAL: registry['academic_year'].id"
+        enrollment_state: "close"
+
+    - step: "Setup - create school"
+      action: "create"
+      model: "school"
+      save_as: "school"
+      values:
+        name: "EVAL: 'SDFD School %d' % env['school'].search_count([])"
+        code: "EVAL: 'SDFSCH%d' % env['school'].search_count([])"
+        grade_type_id: "EVAL: registry['grade_type'].id"
+
+    - step: "Setup - create grade"
+      action: "create"
+      model: "school_grade"
+      save_as: "grade"
+      values:
+        name: "EVAL: 'SDFD Grade %d' % env['school_grade'].search_count([])"
+        code: "EVAL: 'SDFGR%d' % env['school_grade'].search_count([])"
+        sequence: 10
+        type_id: "EVAL: registry['grade_type'].id"
+
+    - step: "Setup - create grade class"
+      action: "create"
+      model: "school_grade_class"
+      save_as: "grade_class"
+      values:
+        name: "EVAL: 'SDFD Class %d' % env['school_grade_class'].search_count([])"
+        code: "EVAL: 'SDFCL%d' % env['school_grade_class'].search_count([])"
+        school_id: "EVAL: registry['school'].id"
+        grade_id: "EVAL: registry['grade'].id"
+
+    - step: "Setup - create student contact"
+      action: "create"
+      model: "res.partner"
+      save_as: "contact"
+      values:
+        name: "EVAL: 'SDFD Contact %d' % env['res.partner'].search_count([])"
+
+    - step: "Setup - create student"
+      action: "create"
+      model: "school_student"
+      save_as: "student"
+      values:
+        name: "EVAL: 'SDFD Student %d' % env['school_student'].search_count([])"
+        code: "EVAL: 'SDFSTU%d' % env['school_student'].search_count([])"
+        contact_id: "EVAL: registry['contact'].id"
+        school_id: "EVAL: registry['school'].id"
+
+    - step: "Setup - create payment template"
+      action: "create"
+      model: "school_enrollment_payment_template"
+      save_as: "payment_template"
+      values:
+        customer_invoice_type_id: "REC: ci_type.id"
+        name:
+          "EVAL: 'SDFD Template %d' %
+          env['school_enrollment_payment_template'].search_count([])"
+        code:
+          "EVAL: 'SDFPT%d' % env['school_enrollment_payment_template'].search_count([])"
+        school_id: "EVAL: registry['school'].id"
+        grade_id: "EVAL: registry['grade'].id"
+        academic_term_id: "EVAL: registry['academic_term'].id"
+        term_ids:
+          - - 0
+            - 0
+            - name: "Term 1 SDFD"
+              sequence: 10
+              detail_ids:
+                - - 0
+                  - 0
+                  - product_id: "EVAL: registry['product'].id"
+                    name: "Fee SDFD"
+                    account_id: "EVAL: registry['income_account'].id"
+                    uom_quantity: 1.0
+                    uom_id: "REF: uom.product_uom_unit"
+                    price_unit: 1000000.0
+
+    - step: "Setup - create enrollment"
+      action: "create"
+      model: "school_enrollment"
+      save_as: "enrollment"
+      values:
+        customer_invoice_type_id: "REC: ci_type.id"
+        receivable_account_id: "REC: receivable_account.id"
+        date: "2024-07-01"
+        academic_year_id: "EVAL: registry['academic_year'].id"
+        academic_term_id: "EVAL: registry['academic_term'].id"
+        school_id: "EVAL: registry['school'].id"
+        grade_id: "EVAL: registry['grade'].id"
+        grade_class_id: "EVAL: registry['grade_class'].id"
+        student_id: "EVAL: registry['student'].id"
+        payment_template_id: "EVAL: registry['payment_template'].id"
+        pricelist_id: "EVAL: registry['pricelist'].id"
+        currency_id: "EVAL: env.company.currency_id.id"
+        receivable_journal_id: "EVAL: registry['sale_journal'].id"
+
+    - step: "Setup - confirm enrollment"
+      action: "call"
+      target: "enrollment"
+      method: "action_confirm"
+      as_user: "base.user_admin"
+
+    - step: "Setup - compute payment"
+      action: "call"
+      target: "enrollment"
+      method: "action_compute_payment"
+      as_user: "base.user_admin"
+
+    - step: "Setup - assert enrollment is confirm before approve (forces refresh, T-04)"
+      action: "assert"
+      target: "enrollment"
+      asserts:
+        state:
+          type: "value"
+          expected: "confirm"
+
+    - step: "Setup - approve enrollment"
+      action: "call"
+      target: "enrollment"
+      method: "action_approve_approval"
+      as_user: "base.user_admin"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Setup - get the payment term"
+      action: "search"
+      model: "school_enrollment_payment_term"
+      domain: [["enrollment_id", "=", "REC: enrollment.id"]]
+      save_as: "term"
+      expect_count: 1
+
+    - step: "Setup - create the term invoice"
+      action: "call"
+      target: "term"
+      method: "action_create_invoice"
+      as_user: "base.user_admin"
+
+    - step: "Setup - get the created customer invoice"
+      action: "search"
+      model: "customer_invoice"
+      domain: [["id", "=", "REC: term.customer_invoice_id.id"]]
+      save_as: "invoice"
+      expect_count: 1
+
+    - step: "Setup - confirm the term invoice"
+      action: "call"
+      target: "invoice"
+      method: "action_confirm"
+      as_user: "base.user_admin"
+
+    - step: "Setup - assert the invoice is confirm before approve (T-04)"
+      action: "assert"
+      target: "invoice"
+      asserts:
+        state:
+          type: "value"
+          expected: "confirm"
+
+    - step: "Setup - open the term invoice"
+      action: "call"
+      target: "invoice"
+      method: "action_approve_approval"
+      as_user: "base.user_admin"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Setup - create the deposit liability account"
+      action: "create"
+      model: "account.account"
+      save_as: "deposit_account"
+      values:
+        name:
+          "EVAL: 'SDFD Deposit Liability %d' % env['account.account'].search_count([])"
+        code: "EVAL: 'SDFDL%d' % env['account.account'].search_count([])"
+        user_type_id: "REF: account.data_account_type_current_liabilities"
+        reconcile: true
+
+    - step: "Setup - create the deposit source product"
+      action: "create"
+      model: "product.product"
+      save_as: "source_product"
+      values:
+        name: "EVAL: 'SDFD Deposit Source %d' % env['product.product'].search_count([])"
+        type: "service"
+
+    - step: "Setup - create the deposit type, not auto realized"
+      action: "create"
+      model: "school_deposit_type"
+      save_as: "deposit_type"
+      values:
+        name:
+          "EVAL: 'SDFD Deposit Type %d' % env['school_deposit_type'].search_count([])"
+        code: "EVAL: 'SDFDT%d' % env['school_deposit_type'].search_count([])"
+        auto_realize: false
+        deposit_account_id: "REC: deposit_account.id"
+        realization_journal_id: "REC: general_journal.id"
+        source_product_ids:
+          - - 6
+            - 0
+            - - "REC: source_product.id"
+        target_product_ids:
+          - - 6
+            - 0
+            - - "REC: product.id"
+
+    - step: "Setup - create the realization that references the open invoice"
+      action: "create"
+      model: "school_deposit_realization"
+      save_as: "realization"
+      values:
+        type_id: "REC: deposit_type.id"
+        partner_id: "REC: contact.id"
+        customer_invoice_id: "REC: invoice.id"
+        journal_id: "REC: general_journal.id"
+        date: 2026-08-10
+        user_id: "REF: base.user_admin"
+
+scenarios:
+  - name:
+      "School Deposit Force Delete - Invoice referenced by a realization is rejected"
+    steps:
+      - step: "Assert the invoice is open and the realization exists"
+        action: "assert"
+        target: "realization"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Force delete of the term invoice is rejected naming the document"
+        action: "call"
+        target: "term"
+        method: "action_force_delete_invoice"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "Deposit realization"
+
+      - step: "Assert the term still holds its invoice"
+        action: "assert"
+        target: "term"
+        asserts:
+          customer_invoice_id:
+            type: "m2o"
+            expected: "REC: invoice"
+          state:
+            type: "value"
+            expected: "invoiced"
+
+      - step: "Assert the invoice is still open and not reset"
+        action: "assert"
+        target: "invoice"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert the realization still references the invoice"
+        action: "assert"
+        target: "realization"
+        asserts:
+          customer_invoice_id:
+            type: "m2o"
+            expected: "REC: invoice"
+
+      - step: "Assert the invoice still exists"
+        action: "search"
+        model: "customer_invoice"
+        domain: [["partner_id", "=", "REC: contact.id"]]
+        save_as: "_check"
+        expect_count: 1
