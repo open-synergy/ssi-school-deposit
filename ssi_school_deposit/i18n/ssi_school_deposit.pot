@@ -14,6 +14,17 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: ssi_school_deposit
+#: code:addons/ssi_school_deposit/models/customer_invoice.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Force delete customer invoice\n"
+"Database ID: %s\n"
+"Problem: Deposit realization '%s' still references this invoice\n"
+"Solution: Remove the deposit realization before force deleting the invoice\n"
+msgstr ""
+
+#. module: ssi_school_deposit
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_forfeit__name
 #: model:ir.model.fields,field_description:ssi_school_deposit.field_school_deposit_realization__name
 msgid "# Document"
